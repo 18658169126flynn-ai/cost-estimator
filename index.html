@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>外发加工成本核算计算器</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --primary-light: #a5b4fc;
+  --accent: #06b6d4;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-alt: #f1f5f9;
+  --border: #e2e8f0;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased; }
+
+/* Header */
+.hero { background:linear-gradient(135deg,#1e1b4b 0%,#312e81 30%,#4338ca 60%,#6366f1 100%); padding:48px 24px 40px; text-align:center; position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%; background:radial-gradient(circle at 30% 50%,rgba(99,102,241,0.3) 0%,transparent 50%),radial-gradient(circle at 70% 80%,rgba(6,182,212,0.2) 0%,transparent 50%); animation:float 20s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-20px,-10px)} }
+.hero h1 { font-size:32px; font-weight:800; color:#fff; position:relative; letter-spacing:-0.5px; margin-bottom:8px; }
+.hero p { font-size:14px; color:rgba(255,255,255,0.7); position:relative; max-width:500px; margin:0 auto; }
+.hero-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.12); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.15); padding:6px 16px; border-radius:100px; font-size:12px; color:rgba(255,255,255,0.9); margin-bottom:16px; position:relative; }
+
+/* Container */
+.container { max-width:960px; margin:0 auto; padding:0 20px; }
+
+/* Tabs */
+.tabs-wrap { position:sticky; top:0; z-index:100; background:var(--bg); padding:20px 0 0; }
+.tabs { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; background:var(--surface); padding:6px; border-radius:var(--radius); box-shadow:var(--shadow-md); border:1px solid var(--border); }
+.tab { padding:14px 8px; text-align:center; cursor:pointer; border-radius:var(--radius-sm); transition:all 0.25s cubic-bezier(.4,0,.2,1); font-weight:600; font-size:13px; color:var(--text-secondary); position:relative; user-select:none; }
+.tab:hover { background:var(--surface-alt); color:var(--text); }
+.tab.active { background:var(--primary); color:#fff; box-shadow:0 2px 8px rgba(99,102,241,0.35); }
+.tab-icon { font-size:22px; display:block; margin-bottom:4px; }
+.tab-label { font-size:12px; }
+
+/* Panels */
+.panel-wrap { padding:20px 0 40px; }
+.panel { display:none; animation:slideUp 0.35s ease; }
+.panel.active { display:block; }
+@keyframes slideUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+/* Cards */
+.card { background:var(--surface); border-radius:var(--radius); padding:24px; margin-bottom:16px; border:1px solid var(--border); box-shadow:var(--shadow); transition:box-shadow 0.2s; }
+.card:hover { box-shadow:var(--shadow-md); }
+.card-header { display:flex; align-items:center; gap:10px; margin-bottom:20px; padding-bottom:14px; border-bottom:1px solid var(--border); }
+.card-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.card-icon.blue { background:#eef2ff; }
+.card-icon.green { background:#ecfdf5; }
+.card-icon.orange { background:#fff7ed; }
+.card-icon.purple { background:#faf5ff; }
+.card-icon.cyan { background:#ecfeff; }
+.card-title { font-size:15px; font-weight:700; color:var(--text); }
+.card-subtitle { font-size:12px; color:var(--text-muted); margin-top:1px; }
+
+/* Form */
+.form-grid { display:grid; gap:14px; }
+.form-grid.g2 { grid-template-columns:1fr 1fr; }
+.form-grid.g3 { grid-template-columns:1fr 1fr 1fr; }
+.form-grid.g4 { grid-template-columns:1fr 1fr 1fr 1fr; }
+.field { position:relative; }
+.field label { display:block; font-size:12px; font-weight:600; color:var(--text-secondary); margin-bottom:6px; letter-spacing:0.01em; }
+.field select, .field input[type="number"], .field input[type="text"] { width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:var(--radius-sm); font-size:14px; font-family:inherit; background:var(--surface); color:var(--text); transition:all 0.2s; appearance:none; -webkit-appearance:none; }
+.field select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:32px; }
+.field select:focus, .field input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(99,102,241,0.12); }
+.field .hint { font-size:11px; color:var(--text-muted); margin-top:4px; }
+
+/* Inline field group */
+.inline-group { display:flex; gap:8px; align-items:flex-end; }
+.inline-group .field { flex:1; }
+.inline-group .unit-label { font-size:12px; color:var(--text-muted); padding:10px 0; white-space:nowrap; }
+
+/* Process rows */
+.proc-row { display:grid; grid-template-columns:1fr 120px 40px; gap:10px; align-items:end; margin-bottom:10px; padding:12px; background:var(--surface-alt); border-radius:var(--radius-sm); border:1px solid var(--border); }
+.proc-row .remove-row { width:36px; height:36px; border:none; background:#fee2e2; color:var(--danger); border-radius:8px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+.proc-row .remove-row:hover { background:#fecaca; transform:scale(1.05); }
+
+/* Surface items */
+.surface-row { display:grid; grid-template-columns:1fr 100px 50px 40px; gap:10px; align-items:end; margin-bottom:8px; padding:10px 12px; background:var(--surface-alt); border-radius:var(--radius-sm); border:1px solid var(--border); }
+
+/* Buttons */
+.btn-add { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; background:transparent; border:1.5px dashed var(--border); color:var(--text-secondary); border-radius:var(--radius-sm); cursor:pointer; font-size:13px; font-weight:500; font-family:inherit; transition:all 0.2s; margin-top:6px; }
+.btn-add:hover { border-color:var(--primary); color:var(--primary); background:#eef2ff; }
+.btn-calc { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; padding:16px; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:#fff; border:none; border-radius:var(--radius); font-size:16px; font-weight:700; font-family:inherit; cursor:pointer; transition:all 0.25s; box-shadow:0 4px 14px rgba(99,102,241,0.3); margin-top:20px; }
+.btn-calc:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(99,102,241,0.4); }
+.btn-calc:active { transform:translateY(0); }
+
+/* Results */
+.result-card { display:none; margin-top:20px; border:2px solid var(--success); background:linear-gradient(135deg,#ecfdf5,#f0fdf4); overflow:hidden; }
+.result-card.show { display:block; animation:slideUp 0.4s ease; }
+.result-header { background:linear-gradient(135deg,var(--success),#059669); padding:18px 24px; color:#fff; }
+.result-header h3 { font-size:16px; font-weight:700; }
+.result-header p { font-size:12px; opacity:0.85; margin-top:2px; }
+.result-body { padding:20px 24px; }
+
+/* Stats */
+.stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
+.stat { background:var(--surface); border-radius:var(--radius-sm); padding:14px; text-align:center; border:1px solid var(--border); }
+.stat-value { font-size:22px; font-weight:800; color:var(--primary); }
+.stat-label { font-size:11px; color:var(--text-muted); margin-top:2px; }
+.stat.highlight { background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border:none; }
+.stat.highlight .stat-value { color:#fff; }
+.stat.highlight .stat-label { color:rgba(255,255,255,0.75); }
+
+/* Breakdown table */
+.breakdown { width:100%; border-collapse:collapse; }
+.breakdown th { text-align:left; font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; padding:10px 12px; border-bottom:2px solid var(--border); }
+.breakdown td { padding:10px 12px; font-size:13px; border-bottom:1px solid #f1f5f9; }
+.breakdown tr:last-child td { border-bottom:none; font-weight:700; color:var(--primary-dark); background:#f8fafc; }
+.breakdown .pct { color:var(--text-muted); font-size:12px; }
+.breakdown .bar { display:inline-block; height:6px; border-radius:3px; background:var(--primary-light); vertical-align:middle; margin-left:8px; }
+
+/* Note */
+.note-box { display:flex; gap:10px; margin-top:16px; padding:12px 16px; background:#fffbeb; border-radius:var(--radius-sm); border:1px solid #fde68a; }
+.note-box .note-icon { font-size:16px; flex-shrink:0; }
+.note-box .note-text { font-size:12px; color:#92400e; line-height:1.5; }
+
+/* Footer */
+.footer { text-align:center; padding:24px; color:var(--text-muted); font-size:12px; }
+.footer a { color:var(--primary); text-decoration:none; }
+
+/* Responsive */
+@media(max-width:768px) {
+  .hero h1 { font-size:24px; }
+  .tabs { grid-template-columns:repeat(3,1fr); gap:4px; padding:4px; }
+  .tab { padding:10px 6px; }
+  .form-grid.g2,.form-grid.g3,.form-grid.g4 { grid-template-columns:1fr; }
+  .stats { grid-template-columns:repeat(2,1fr); }
+  .proc-row { grid-template-columns:1fr 100px 36px; }
+  .surface-row { grid-template-columns:1fr 80px 40px 36px; }
+  .card { padding:18px; }
+  .container { padding:0 12px; }
+}
+/* Negotiation tips */
+.tips-card { display:none; margin-top:16px; border:2px solid var(--primary-light); background:linear-gradient(135deg,#eef2ff,#f5f3ff); overflow:hidden; border-radius:var(--radius); }
+.tips-card.show { display:block; animation:slideUp 0.4s ease; }
+.tips-header { background:linear-gradient(135deg,var(--primary),#7c3aed); padding:14px 20px; color:#fff; display:flex; align-items:center; gap:10px; }
+.tips-header h3 { font-size:15px; font-weight:700; }
+.tips-header .badge { background:rgba(255,255,255,0.2); padding:3px 10px; border-radius:100px; font-size:11px; }
+.tips-body { padding:16px 20px; }
+.tip-item { display:flex; gap:12px; padding:12px 0; border-bottom:1px solid rgba(99,102,241,0.1); }
+.tip-item:last-child { border-bottom:none; }
+.tip-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+.tip-icon.cost { background:#fef3c7; }
+.tip-icon.delivery { background:#dbeafe; }
+.tip-icon.logistics { background:#d1fae5; }
+.tip-icon.quality { background:#fce7f3; }
+.tip-icon.strategy { background:#e0e7ff; }
+.tip-content { flex:1; }
+.tip-title { font-size:13px; font-weight:700; color:var(--text); margin-bottom:2px; }
+.tip-text { font-size:12px; color:var(--text-secondary); line-height:1.5; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">🏭 Manufacturing Cost Estimator</div>
+  <h1>外发加工成本核算</h1>
+  <p>CNC · 注塑 · 钣金 · SMT · 压铸 · 线束 · PCB制板 — 七大工艺全覆盖</p>
+</div>
+
+<div class="container">
+<div class="tabs-wrap">
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('cnc',this)"><span class="tab-icon">⚙️</span><span class="tab-label">CNC机加工</span></div>
+    <div class="tab" onclick="switchTab('inj',this)"><span class="tab-icon">🧪</span><span class="tab-label">注塑加工</span></div>
+    <div class="tab" onclick="switchTab('sheet',this)"><span class="tab-icon">📐</span><span class="tab-label">钣金加工</span></div>
+    <div class="tab" onclick="switchTab('smt',this)"><span class="tab-icon">🔌</span><span class="tab-label">SMT贴片</span></div>
+    <div class="tab" onclick="switchTab('dc',this)"><span class="tab-icon">🏭</span><span class="tab-label">压铸</span></div>
+    <div class="tab" onclick="switchTab('wh',this)"><span class="tab-icon">🔗</span><span class="tab-label">线束加工</span></div>
+    <div class="tab" onclick="switchTab('pcb',this)"><span class="tab-icon">📋</span><span class="tab-label">PCB制板</span></div>
+  </div>
+</div>
+
+<div class="panel-wrap">
+
+<!-- ======================== CNC ======================== -->
+<div class="panel active" id="p-cnc">
+  <div class="card">
+    <div class="card-header"><div class="card-icon blue">📦</div><div><div class="card-title">材料信息</div><div class="card-subtitle">选择材料类型并确认单价</div></div></div>
+    <div class="form-grid g2">
+      <div class="field"><label>材料类型</label><select id="cnc-mat" onchange="cncMat()"><option value="">— 请选择 —</option><optgroup label="金属"><option value="6.5" data-n="45#钢">45#钢</option><option value="5" data-n="Q235">Q235冷轧板</option><option value="22" data-n="304SS">304不锈钢</option><option value="30" data-n="316SS">316不锈钢</option><option value="26" data-n="6061Al">6061铝合金</option><option value="42" data-n="7075Al">7075铝合金</option><option value="62" data-n="H62Cu">黄铜H62</option><option value="72" data-n="T2Cu">紫铜T2</option><option value="240" data-n="TC4Ti">钛合金TC4</option></optgroup><optgroup label="工程塑料"><option value="30" data-n="POM">POM赛钢</option><option value="100" data-n="PTFE">PTFE特氟龙</option><option value="280" data-n="PEI">PEI Ultem</option><option value="25" data-n="PA6">尼龙PA6</option><option value="700" data-n="PEEK">PEEK</option></optgroup></select></div>
+      <div class="field"><label>材料单价 (元/kg)</label><input type="number" id="cnc-price" step="0.1" placeholder="选择后自动填入"></div>
+    </div>
+    <div class="form-grid g3" style="margin-top:14px">
+      <div class="field"><label>零件净重 (g)</label><input type="number" id="cnc-wt" step="0.1" placeholder="200"></div>
+      <div class="field"><label>材料利用率</label><select id="cnc-util"><option value="0.88">简单件 88%</option><option value="0.75" selected>中等件 75%</option><option value="0.60">复杂件 60%</option><option value="0.45">极复杂 45%</option></select></div>
+      <div class="field"><label>订单数量 (件)</label><input type="number" id="cnc-qty" value="100" step="1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon green">⚙️</div><div><div class="card-title">加工工序</div><div class="card-subtitle">选择设备并填写工时</div></div></div>
+    <div id="cnc-procs">
+      <div class="proc-row" data-idx="0">
+        <div class="field"><label>设备</label><select class="cnc-dev"><option value="80">3轴 (¥80/h)</option><option value="150" selected>3轴 BT40 (¥150/h)</option><option value="180">4轴 (¥180/h)</option><option value="350">5轴 (¥350/h)</option><option value="100">数控车 (¥100/h)</option><option value="200">走心机 (¥200/h)</option><option value="250">车铣复合 (¥250/h)</option><option value="50">普车 (¥50/h)</option><option value="55">普铣 (¥55/h)</option><option value="55">磨床 (¥55/h)</option><option value="70">线割快 (¥70/h)</option><option value="120">线割慢 (¥120/h)</option><option value="100">EDM (¥100/h)</option><option value="40">钳工 (¥40/h)</option></select></div>
+        <div class="field"><label>工时 (min)</label><input type="number" class="cnc-time" value="30" step="1"></div>
+        <button class="remove-row" onclick="rmRow(this)" title="删除">×</button>
+      </div>
+    </div>
+    <button class="btn-add" onclick="addProc()">＋ 添加工序</button>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon orange">🎨</div><div><div class="card-title">表面处理</div><div class="card-subtitle">可选，可添加多项</div></div></div>
+    <div id="cnc-surfs">
+      <div class="surface-row"><div class="field"><label>处理方式</label><select class="cnc-stype"><option value="0|n">无</option><option value="12|kg">阳极氧化 ¥12/kg</option><option value="15|kg">硬质阳极 ¥15/kg</option><option value="23|kg">彩色阳极 ¥23/kg</option><option value="20|kg">镀镍(铝) ¥20/kg</option><option value="12|kg">镀镍(铁) ¥12/kg</option><option value="1.5|kg">发黑 ¥1.5/kg</option><option value="4|kg">镀锌 ¥4/kg</option><option value="50|m2">喷漆 ¥50/m²</option><option value="30|m2">喷粉 ¥30/m²</option><option value="20|m2">电泳 ¥20/m²</option><option value="2|kg">喷砂 ¥2/kg</option></select></div><div class="field"><label>数量</label><input type="number" class="cnc-sqty" value="0" step="0.1"></div><div class="unit-label">kg/m²</div><button class="remove-row" onclick="rmRow(this)" title="删除">×</button></div>
+    </div>
+    <button class="btn-add" onclick="addSurf('cnc')">＋ 添加处理</button>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">📐</div><div><div class="card-title">其他参数</div></div></div>
+    <div class="form-grid g3">
+      <div class="field"><label>管理利润率</label><select id="cnc-profit"><option value="0.15">15%</option><option value="0.20" selected>20%</option><option value="0.25">25%</option><option value="0.30">30%</option></select></div>
+      <div class="field"><label>刀具损耗费 (元)</label><input type="number" id="cnc-tool" value="0" step="1"><div class="hint">0 = 自动估算(加工费12%)</div></div>
+      <div class="field"><label>包装运输 (元/件)</label><input type="number" id="cnc-pkg" value="2" step="0.5"></div>
+    </div>
+  </div>
+
+  <button class="btn-calc" onclick="calcCnc()">📊 计算 CNC 加工成本</button>
+  <div class="result-card" id="cnc-r"></div>
+  <div class="tips-card" id="cnc-tips"></div>
+</div>
+
+<!-- ======================== 注塑 ======================== -->
+<div class="panel" id="p-inj">
+  <div class="card">
+    <div class="card-header"><div class="card-icon cyan">🧪</div><div><div class="card-title">材料信息</div><div class="card-subtitle">选择注塑材料</div></div></div>
+    <div class="form-grid g2">
+      <div class="field"><label>注塑材料</label><select id="inj-mat" onchange="injMat()"><option value="">— 请选择 —</option><option value="10" data-n="PP">PP聚丙烯</option><option value="15" data-n="ABS">ABS</option><option value="23" data-n="PC">PC聚碳酸酯</option><option value="25" data-n="PC+ABS">PC+ABS合金</option><option value="22" data-n="PA6">PA6尼龙</option><option value="28" data-n="PA66">PA66尼龙</option><option value="25" data-n="POM">POM赛钢</option><option value="20" data-n="PMMA">PMMA亚克力</option><option value="18" data-n="PBT">PBT</option><option value="30" data-n="TPU">TPU弹性体</option><option value="120" data-n="LCP">LCP</option><option value="800" data-n="PEEK">PEEK</option><option value="25" data-n="FR-ABS">阻燃ABS V0</option><option value="28" data-n="GF-PA66">玻纤PA66</option></select></div>
+      <div class="field"><label>材料单价 (元/kg)</label><input type="number" id="inj-price" step="0.1"></div>
+    </div>
+    <div class="form-grid g2" style="margin-top:14px">
+      <div class="field"><label>产品毛重 (g)</label><input type="number" id="inj-wt" step="0.1" placeholder="45"></div>
+      <div class="field"><label>水口重 (g/穴)</label><input type="number" id="inj-runner" value="8" step="0.1"><div class="hint">热流道填0</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon blue">🏭</div><div><div class="card-title">机台与成型</div><div class="card-subtitle">选择吨位和成型参数</div></div></div>
+    <div class="form-grid g3">
+      <div class="field"><label>机台吨位</label><select id="inj-mach"><option value="40">50T (¥40/h)</option><option value="55">80T (¥55/h)</option><option value="65">120T (¥65/h)</option><option value="80" selected>160T (¥80/h)</option><option value="100">200T (¥100/h)</option><option value="120">250T (¥120/h)</option><option value="140">300T (¥140/h)</option><option value="180">400T (¥180/h)</option><option value="220">500T (¥220/h)</option><option value="280">650T (¥280/h)</option><option value="350">800T (¥350/h)</option><option value="480">1000T (¥480/h)</option></select></div>
+      <div class="field"><label>成型周期 (秒)</label><input type="number" id="inj-cycle" value="25" step="1"><div class="hint">薄壁8~15 普通15~30</div></div>
+      <div class="field"><label>穴数</label><select id="inj-cav"><option value="1">1穴</option><option value="2">2穴</option><option value="4" selected>4穴</option><option value="8">8穴</option><option value="16">16穴</option></select></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon green">✨</div><div><div class="card-title">后加工</div><div class="card-subtitle">可选，可添加多项</div></div></div>
+    <div id="inj-posts">
+      <div class="surface-row"><div class="field"><label>工艺</label><select class="inj-ptype"><option value="0">无</option><option value="0.5">丝印单色 ¥0.5</option><option value="1.2">丝印多色 ¥1.2/色</option><option value="1.0">移印 ¥1.0</option><option value="1.5">喷油普通 ¥1.5</option><option value="2.5">喷油UV ¥2.5</option><option value="3.0">真空镀 ¥3.0</option><option value="1.5">水电镀 ¥1.5</option><option value="1.5">烫金 ¥1.5</option><option value="0.5">激光雕 ¥0.5</option><option value="0.5">超声焊 ¥0.5/点</option></select></div><div class="field"><label>数量</label><input type="number" class="inj-pqty" value="1" min="1"></div><div class="unit-label">次/个</div><button class="remove-row" onclick="rmRow(this)" title="删除">×</button></div>
+    </div>
+    <button class="btn-add" onclick="addSurf('inj')">＋ 添加后加工</button>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">📐</div><div><div class="card-title">其他参数</div></div></div>
+    <div class="form-grid g4">
+      <div class="field"><label>订单数量</label><input type="number" id="inj-qty" value="5000" step="100"></div>
+      <div class="field"><label>模具总价 (元)</label><input type="number" id="inj-mold" value="30000" step="1000"><div class="hint">用于分摊</div></div>
+      <div class="field"><label>管理利润率</label><select id="inj-profit"><option value="0.15">15%</option><option value="0.20" selected>20%</option><option value="0.25">25%</option></select></div>
+      <div class="field"><label>包装运输 (元/件)</label><input type="number" id="inj-pkg" value="0.15" step="0.05"></div>
+    </div>
+  </div>
+
+  <button class="btn-calc" onclick="calcInj()">📊 计算注塑成本</button>
+  <div class="result-card" id="inj-r"></div>
+  <div class="tips-card" id="inj-tips"></div>
+</div>
+
+<!-- ======================== 钣金 ======================== -->
+<div class="panel" id="p-sheet">
+  <div class="card">
+    <div class="card-header"><div class="card-icon blue">📦</div><div><div class="card-title">板材信息</div><div class="card-subtitle">材料和尺寸</div></div></div>
+    <div class="form-grid g2">
+      <div class="field"><label>板材材料</label><select id="sh-mat" onchange="shMat()"><option value="">— 请选择 —</option><option value="4.8" data-n="SPCC">冷轧板SPCC</option><option value="7.2" data-n="SECC">电解板SECC</option><option value="4.2" data-n="SPHC">热轧板SPHC</option><option value="6.5" data-n="SGCC">镀锌板SGCC</option><option value="22" data-n="SUS304">304不锈钢</option><option value="12" data-n="SUS201">201不锈钢</option><option value="28" data-n="Al5052">铝板5052</option><option value="26" data-n="Al6061">铝板6061</option><option value="62" data-n="CuH62">铜板H62</option></select></div>
+      <div class="field"><label>材料单价 (元/kg)</label><input type="number" id="sh-price" step="0.1"></div>
+    </div>
+    <div class="form-grid g4" style="margin-top:14px">
+      <div class="field"><label>展开长 (mm)</label><input type="number" id="sh-len" placeholder="500"></div>
+      <div class="field"><label>展开宽 (mm)</label><input type="number" id="sh-wid" placeholder="400"></div>
+      <div class="field"><label>板厚 (mm)</label><input type="number" id="sh-thk" value="1.5" step="0.1"></div>
+      <div class="field"><label>数量 (件)</label><input type="number" id="sh-qty" value="100" step="1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon green">🔩</div><div><div class="card-title">加工工序</div><div class="card-subtitle">填写各工序参数</div></div></div>
+    <div class="form-grid g2">
+      <div class="field"><label>激光切割长度 (mm)</label><input type="number" id="sh-laser" placeholder="周长+内孔"><div class="hint">内外轮廓总长度</div></div>
+      <div class="field"><label>激光单价 (元/m)</label><input type="number" id="sh-lp" value="1.5" step="0.1"><div class="hint">碳钢1.5mm ≈ 0.8~1.5</div></div>
+    </div>
+    <div class="form-grid g3" style="margin-top:14px">
+      <div class="field"><label>折弯刀数</label><input type="number" id="sh-bend" value="6" step="1"></div>
+      <div class="field"><label>折弯单价 (元/刀)</label><input type="number" id="sh-bp" value="0.8" step="0.1"></div>
+      <div class="field"><label>冲/钻孔数</label><input type="number" id="sh-hole" value="8" step="1"></div>
+    </div>
+    <div class="form-grid g3" style="margin-top:14px">
+      <div class="field"><label>孔加工单价 (元/孔)</label><input type="number" id="sh-hp" value="0.3" step="0.05"></div>
+      <div class="field"><label>焊接点数</label><input type="number" id="sh-weld" value="4" step="1"></div>
+      <div class="field"><label>焊接单价 (元/点)</label><input type="number" id="sh-wp" value="0.5" step="0.1"><div class="hint">氩弧0.8~1.5 CO2 0.3~0.8</div></div>
+    </div>
+    <div class="form-grid g2" style="margin-top:14px">
+      <div class="field"><label>去毛刺 (元/件)</label><input type="number" id="sh-deburr" value="1.5" step="0.5"></div>
+      <div class="field"><label>其他工序 (元/件)</label><input type="number" id="sh-other" value="0" step="0.5"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon orange">🎨</div><div><div class="card-title">表面处理</div></div></div>
+    <div id="sh-surfs">
+      <div class="surface-row"><div class="field"><label>处理方式</label><select class="sh-stype"><option value="0|n">无</option><option value="30|m2" selected>喷粉 ¥30/m²</option><option value="45|m2">喷漆 ¥45/m²</option><option value="65|m2">氟碳漆 ¥65/m²</option><option value="20|m2">电泳 ¥20/m²</option><option value="4|kg">镀锌 ¥4/kg</option><option value="30|m2">阳极氧化 ¥30/m²</option><option value="15|m2">拉丝 ¥15/m²</option></select></div><div class="field"><label>数量</label><input type="number" class="sh-sqty" value="0" step="0.01"></div><div class="unit-label">m²/kg</div><button class="remove-row" onclick="rmRow(this)" title="删除">×</button></div>
+    </div>
+    <button class="btn-add" onclick="addSurf('sh')">＋ 添加处理</button>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">📐</div><div><div class="card-title">其他参数</div></div></div>
+    <div class="form-grid g3">
+      <div class="field"><label>管理利润率</label><select id="sh-profit"><option value="0.12">12%</option><option value="0.15" selected>15%</option><option value="0.20">20%</option></select></div>
+      <div class="field"><label>装配费 (元/件)</label><input type="number" id="sh-asm" value="1.3" step="0.1"></div>
+      <div class="field"><label>包装运输 (元/件)</label><input type="number" id="sh-pkg" value="2" step="0.5"></div>
+    </div>
+  </div>
+
+  <button class="btn-calc" onclick="calcSheet()">📊 计算钣金成本</button>
+  <div class="result-card" id="sh-r"></div>
+  <div class="tips-card" id="sh-tips"></div>
+</div>
+
+<!-- ======================== SMT ======================== -->
+<div class="panel" id="p-smt">
+  <div class="card">
+    <div class="card-header"><div class="card-icon cyan">📋</div><div><div class="card-title">PCB基本信息</div><div class="card-subtitle">板子规格和订单量</div></div></div>
+    <div class="form-grid g3">
+      <div class="field"><label>贴片面数</label><select id="smt-sides"><option value="1">单面</option><option value="2" selected>双面</option></select></div>
+      <div class="field"><label>订单数量 (片)</label><input type="number" id="smt-qty" value="500" step="10"></div>
+      <div class="field"><label>拼板数</label><select id="smt-panel"><option value="1">单片</option><option value="2">2拼</option><option value="4" selected>4拼</option><option value="8">8拼</option></select></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon green">📊</div><div><div class="card-title">元件点数统计</div><div class="card-subtitle">按封装类型统计焊盘数</div></div></div>
+    <div class="form-grid g2">
+      <div class="field"><label>A面 — 常规阻容 (0402~1206)</label><input type="number" id="smt-ap" value="200" step="1"><div class="hint">每个元件=2点</div></div>
+      <div class="field"><label>A面 — SOT/SOD类</label><input type="number" id="smt-as" value="30" step="1"><div class="hint">SOT-23=3点</div></div>
+    </div>
+    <div class="form-grid g2" style="margin-top:14px">
+      <div class="field"><label>A面 — IC类 (SOP/QFP/QFN)</label><input type="number" id="smt-ai" value="200" step="1"><div class="hint">按引脚数</div></div>
+      <div class="field"><label>A面 — BGA类</label><input type="number" id="smt-ab" value="0" step="1"><div class="hint">按焊球数</div></div>
+    </div>
+    <div class="form-grid g2" style="margin-top:14px">
+      <div class="field"><label>A面 — 连接器/异形件</label><input type="number" id="smt-ac" value="50" step="1"><div class="hint">按pin数</div></div>
+      <div class="field"><label>B面 — 总点数</label><input type="number" id="smt-bt" value="300" step="1"><div class="hint">双面时填写</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon orange">🧪</div><div><div class="card-title">测试与特殊工艺</div></div></div>
+    <div class="form-grid g3">
+      <div class="field"><label>DIP引脚数</label><input type="number" id="smt-dip" value="0" step="1"></div>
+      <div class="field"><label>插件单价 (元/引脚)</label><input type="number" id="smt-dp" value="0.05" step="0.01"></div>
+      <div class="field"><label>后焊点数</label><input type="number" id="smt-rw" value="0" step="1"></div>
+    </div>
+    <div class="form-grid g3" style="margin-top:14px">
+      <div class="field"><label>AOI检测</label><select id="smt-aoi"><option value="0">无</option><option value="0.01" selected>标准 ¥0.01/点</option><option value="0.02">3D高精 ¥0.02/点</option></select></div>
+      <div class="field"><label>ICT/FCT测试</label><select id="smt-fct"><option value="0">无</option><option value="1">ICT ¥1/件</option><option value="2">FCT简单 ¥2/件</option><option value="5">FCT标准 ¥5/件</option><option value="15">FCT复杂 ¥15/件</option></select></div>
+      <div class="field"><label>X-Ray + 三防</label><select id="smt-xr"><option value="0">无</option><option value="5">X-Ray ¥5/件</option><option value="10">X-Ray+三防 ¥10/件</option></select></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">💰</div><div><div class="card-title">费用模式</div></div></div>
+    <div class="form-grid g4">
+      <div class="field"><label>加工模式</label><select id="smt-mode" onchange="smtMode()"><option value="cm" selected>来料加工</option><option value="ems">代工代料</option></select></div>
+      <div class="field"><label>BOM物料 (元/件)</label><input type="number" id="smt-bom" value="0" step="1"><div class="hint">代工代料时填写</div></div>
+      <div class="field"><label>工程费 (元)</label><input type="number" id="smt-eng" value="800" step="100"></div>
+      <div class="field"><label>管理利润率</label><select id="smt-profit"><option value="0.10">10%</option><option value="0.12" selected>12%</option><option value="0.15">15%</option></select></div>
+    </div>
+  </div>
+
+  <button class="btn-calc" onclick="calcSmt()">📊 计算 SMT 成本</button>
+  <div class="result-card" id="smt-r"></div>
+  <div class="tips-card" id="smt-tips"></div>
+</div>
+
+</div><!-- panel-wrap -->
+
+<!-- ======================== 压铸 ======================== -->
+<div class="panel" id="p-dc">
+  <div class="card">
+    <div class="card-header"><div class="card-icon orange">🏭</div><div><div class="card-title">材料信息</div><div class="card-subtitle">铝合金/锌合金压铸</div></div></div>
+    <div class="form-grid g2">
+      <div class="field"><label>压铸材料</label><select id="dc-mat" onchange="dcMat()"><option value="">— 请选择 —</option><optgroup label="铝合金（冷室）"><option value="20|2.7">ADC12 (¥20/kg)</option><option value="21|2.71">A380 (¥21/kg)</option><option value="22|2.68">A356 (¥22/kg)</option></optgroup><optgroup label="锌合金（热室）"><option value="25|6.6">Zamak3 (¥25/kg)</option><option value="26|6.7">Zamak5 (¥26/kg)</option></optgroup></select></div>
+      <div class="field"><label>材料单价 (元/kg)</label><input type="number" id="dc-price" step="0.1"></div>
+    </div>
+    <input type="hidden" id="dc-density" value="2.7">
+    <div class="form-grid g3" style="margin-top:14px">
+      <div class="field"><label>产品净重 (g)</label><input type="number" id="dc-wt" step="0.1" placeholder="200"></div>
+      <div class="field"><label>浇口/溢料重 (g)</label><input type="number" id="dc-runner" value="30" step="1"><div class="hint">含浇口、集渣包</div></div>
+      <div class="field"><label>订单数量 (件)</label><input type="number" id="dc-qty" value="10000" step="100"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon blue">⚙️</div><div><div class="card-title">机台与成型</div></div></div>
+    <div class="form-grid g3">
+      <div class="field"><label>压铸机吨位</label><select id="dc-mach"><option value="100">160T (¥100/h)</option><option value="140">280T (¥140/h)</option><option value="180" selected>400T (¥180/h)</option><option value="220">500T (¥220/h)</option><option value="300">800T (¥300/h)</option><option value="420">1000T (¥420/h)</option><option value="650">1600T (¥650/h)</option></select></div>
+      <div class="field"><label>成型周期 (秒)</label><input type="number" id="dc-cycle" value="40" step="5"><div class="hint">小件20~30s 中件30~60s</div></div>
+      <div class="field"><label>穴数</label><select id="dc-cav"><option value="1" selected>1穴</option><option value="2">2穴</option><option value="4">4穴</option></select></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon green">🔧</div><div><div class="card-title">后加工与表面处理</div></div></div>
+    <div class="form-grid g3">
+      <div class="field"><label>去毛刺 (元/件)</label><input type="number" id="dc-deburr" value="0.15" step="0.05"></div>
+      <div class="field"><label>CNC精加工 (元/件)</label><input type="number" id="dc-cnc" value="0" step="0.1"><div class="hint">需要时填写</div></div>
+      <div class="field"><label>攻丝 (元/件)</label><input type="number" id="dc-tap" value="0" step="0.1"></div>
+    </div>
+    <div id="dc-surfs">
+      <div class="surface-row"><div class="field"><label>表面处理</label><select class="dc-stype"><option value="0|n">无</option><option value="30|m2">喷粉 ¥30/m²</option><option value="45|m2">喷漆 ¥45/m²</option><option value="8|kg">钝化 ¥8/kg</option><option value="15|m2">电泳 ¥15/m²</option><option value="20|kg">电镀 ¥20/kg</option></select></div><div class="field"><label>数量</label><input type="number" class="dc-sqty" value="0" step="0.01"></div><div class="unit-label">m²/kg</div><button class="remove-row" onclick="rmRow(this)">×</button></div>
+    </div>
+    <button class="btn-add" onclick="addSurf('dc')">＋ 添加处理</button>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">📐</div><div><div class="card-title">其他参数</div></div></div>
+    <div class="form-grid g3">
+      <div class="field"><label>模具总价 (元)</label><input type="number" id="dc-mold" value="80000" step="5000"><div class="hint">压铸模1.5~150万</div></div>
+      <div class="field"><label>管理利润率</label><select id="dc-profit"><option value="0.12">12%</option><option value="0.15" selected>15%</option><option value="0.20">20%</option></select></div>
+      <div class="field"><label>包装运输 (元/件)</label><input type="number" id="dc-pkg" value="0.3" step="0.1"></div>
+    </div>
+  </div>
+  <button class="btn-calc" onclick="calcDc()">📊 计算压铸成本</button>
+  <div class="result-card" id="dc-r"></div>
+  <div class="tips-card" id="dc-tips"></div>
+</div>
+
+<!-- ======================== 线束 ======================== -->
+<div class="panel" id="p-wh">
+  <div class="card">
+    <div class="card-header"><div class="card-icon cyan">🔌</div><div><div class="card-title">线材信息</div><div class="card-subtitle">填写线材规格和数量</div></div></div>
+    <div id="wh-wires">
+      <div class="surface-row"><div class="field"><label>线材型号</label><select class="wh-wprice"><option value="0.15">UL1007 24AWG (¥0.15/m)</option><option value="0.20">UL1007 22AWG (¥0.20/m)</option><option value="0.35">UL1007 20AWG (¥0.35/m)</option><option value="0.50">UL1015 18AWG (¥0.50/m)</option><option value="0.70">UL1015 16AWG (¥0.70/m)</option><option value="1.00">UL1015 14AWG (¥1.00/m)</option><option value="0.40">UL2464屏蔽线 (¥0.40/m)</option><option value="1.50">RVV电源线 (¥1.50/m)</option></select></div><div class="field"><label>长度(mm)</label><input type="number" class="wh-len" value="300" step="10"></div><div class="field"><label>根数</label><input type="number" class="wh-cnt" value="1" step="1"></div><button class="remove-row" onclick="rmRow(this)">×</button></div>
+    </div>
+    <button class="btn-add" onclick="addWh()">＋ 添加线材</button>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon blue">🔗</div><div><div class="card-title">连接器·端子·焊接·组装</div></div></div>
+    <div class="form-grid g3">
+      <div class="field"><label>连接器总成本 (元/条)</label><input type="number" id="wh-conn" value="2.0" step="0.5"><div class="hint">所有连接器之和</div></div>
+      <div class="field"><label>端子压接费 (元/条)</label><input type="number" id="wh-term" value="0.5" step="0.1"><div class="hint">0.015~0.04元/点×点数</div></div>
+      <div class="field"><label>焊接费 (元/条)</label><input type="number" id="wh-solder" value="0" step="0.1"><div class="hint">0.05~0.2元/焊点</div></div>
+    </div>
+    <div class="form-grid g3" style="margin-top:14px">
+      <div class="field"><label>组装费 (元/条)</label><input type="number" id="wh-asm" value="0.5" step="0.1"><div class="hint">穿套管/热缩管/胶壳</div></div>
+      <div class="field"><label>包扎费 (元/条)</label><input type="number" id="wh-wrap" value="0.3" step="0.1"><div class="hint">扎带/胶布/编织管</div></div>
+      <div class="field"><label>测试费 (元/条)</label><input type="number" id="wh-test" value="0.2" step="0.1"><div class="hint">导通+耐压</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">📐</div><div><div class="card-title">其他参数</div></div></div>
+    <div class="form-grid g3">
+      <div class="field"><label>订单数量 (条)</label><input type="number" id="wh-qty" value="1000" step="100"></div>
+      <div class="field"><label>管理利润率</label><select id="wh-profit"><option value="0.12">12%</option><option value="0.15" selected>15%</option><option value="0.20">20%</option></select></div>
+      <div class="field"><label>包装运输 (元/条)</label><input type="number" id="wh-pkg" value="0.2" step="0.05"></div>
+    </div>
+  </div>
+  <button class="btn-calc" onclick="calcWh()">📊 计算线束成本</button>
+  <div class="result-card" id="wh-r"></div>
+  <div class="tips-card" id="wh-tips"></div>
+</div>
+
+<!-- ======================== PCB制板 ======================== -->
+<div class="panel" id="p-pcb">
+  <div class="card">
+    <div class="card-header"><div class="card-icon blue">📋</div><div><div class="card-title">PCB规格</div><div class="card-subtitle">板材尺寸和层数</div></div></div>
+    <div class="form-grid g3">
+      <div class="field"><label>层数</label><select id="pcb-layers"><option value="1">单面板</option><option value="2" selected>双面板</option><option value="4">4层板</option><option value="6">6层板</option><option value="8">8层板</option><option value="10">10层板</option><option value="12">12层板</option></select></div>
+      <div class="field"><label>板材类型</label><select id="pcb-type"><option value="fr4" selected>FR4标准</option><option value="hfr4">FR4高Tg (×1.5)</option><option value="al">铝基板 (×2.5)</option><option value="fpc">FPC软板 (×3.0)</option><option value="hf">高频Rogers (×8.0)</option></select></div>
+      <div class="field"><label>订单数量 (片)</label><input type="number" id="pcb-qty" value="100" step="10"></div>
+    </div>
+    <div class="form-grid g4" style="margin-top:14px">
+      <div class="field"><label>板长 (mm)</label><input type="number" id="pcb-len" value="100" step="1"></div>
+      <div class="field"><label>板宽 (mm)</label><input type="number" id="pcb-wid" value="80" step="1"></div>
+      <div class="field"><label>拼板数</label><select id="pcb-panel"><option value="1">单片</option><option value="2">2拼</option><option value="4" selected>4拼</option><option value="8">8拼</option></select></div>
+      <div class="field"><label>板厚</label><select id="pcb-thk"><option value="1.6" selected>1.6mm</option><option value="1.0">1.0mm</option><option value="1.2">1.2mm</option><option value="2.0">2.0mm</option></select></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon green">⚙️</div><div><div class="card-title">工艺参数</div><div class="card-subtitle">影响价格的关键工艺</div></div></div>
+    <div class="form-grid g3">
+      <div class="field"><label>表面处理</label><select id="pcb-surf"><option value="hasl" selected>HASL喷锡 (基准)</option><option value="leadfree">无铅HASL (+¥1)</option><option value="osp">OSP (+¥0.5)</option><option value="enig">ENIG沉金 (+¥4)</option><option value="ag">沉银 (+¥1.5)</option><option value="sn">沉锡 (+¥1.5)</option></select></div>
+      <div class="field"><label>阻焊颜色</label><select id="pcb-color"><option value="green" selected>绿色 (基准)</option><option value="blue">蓝色 (+¥1)</option><option value="red">红色 (+¥1)</option><option value="black">黑色 (+¥1)</option><option value="white">白色 (+¥1)</option></select></div>
+      <div class="field"><label>铜厚</label><select id="pcb-copper"><option value="1" selected>1oz (基准)</option><option value="1.5">1.5oz (×1.2)</option><option value="2">2oz (×1.4)</option><option value="3">3oz (×2.0)</option></select></div>
+    </div>
+    <div class="form-grid g2" style="margin-top:14px">
+      <div class="field"><label>最小线宽/线距 (mil)</label><select id="pcb-minw"><option value="6" selected>6mil (基准)</option><option value="8">≥8mil (基准)</option><option value="5">5mil (×1.15)</option><option value="4">4mil (×1.4)</option><option value="3.5">3.5mil (×1.8)</option><option value="3">3mil (×2.5)</option></select></div>
+      <div class="field"><label>最小孔径 (mm)</label><select id="pcb-minh"><option value="0.3" selected>0.3mm (基准)</option><option value="0.4">≥0.4mm (基准)</option><option value="0.25">0.25mm (×1.1)</option><option value="0.2">0.2mm (×1.3)</option><option value="0.15">0.15mm (×2.0)</option></select></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">📐</div><div><div class="card-title">费用参数</div></div></div>
+    <div class="form-grid g2">
+      <div class="field"><label>管理利润率</label><select id="pcb-profit"><option value="0.10">10%</option><option value="0.12" selected>12%</option><option value="0.15">15%</option></select></div>
+      <div class="field"><label>加急选项</label><select id="pcb-rush"><option value="1" selected>标准交期</option><option value="1.4">加急72H (×1.4)</option><option value="1.6">加急48H (×1.6)</option><option value="2.0">加急24H (×2.0)</option></select></div>
+    </div>
+  </div>
+  <button class="btn-calc" onclick="calcPcb()">📊 计算PCB制板成本</button>
+  <div class="result-card" id="pcb-r"></div>
+  <div class="tips-card" id="pcb-tips"></div>
+</div>
+</div><!-- container -->
+
+<div class="footer">⚠️ 估算仅供参考，实际以供应商报价为准 · 数据基于2024-2025年市场行情</div>
+
+<script>
+function switchTab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('p-'+id).classList.add('active');
+}
+function rmRow(b){const r=b.closest('.proc-row,.surface-row');if(r.parentElement.children.length>1)r.remove();}
+function addProc(){const h=document.querySelector('.proc-row').outerHTML;const d=document.createElement('div');d.innerHTML=h;const r=d.firstElementChild;r.querySelector('.cnc-time').value=20;document.getElementById('cnc-procs').appendChild(r);}
+function addSurf(prefix){let src,cont;if(prefix==='cnc'){src=document.querySelector('#cnc-surfs .surface-row');cont=document.getElementById('cnc-surfs');}else if(prefix==='inj'){src=document.querySelector('#inj-posts .surface-row');cont=document.getElementById('inj-posts');}else if(prefix==='dc'){src=document.querySelector('#dc-surfs .surface-row');cont=document.getElementById('dc-surfs');}else{src=document.querySelector('#sh-surfs .surface-row');cont=document.getElementById('sh-surfs');}const r=src.cloneNode(true);r.querySelectorAll('input').forEach(i=>i.value=0);cont.appendChild(r);}
+function addWh(){const r=document.querySelector('#wh-wires .surface-row').cloneNode(true);document.getElementById('wh-wires').appendChild(r);}
+function cncMat(){const s=document.getElementById('cnc-mat');if(s.value)document.getElementById('cnc-price').value=s.value;}
+function injMat(){const s=document.getElementById('inj-mat');if(s.value)document.getElementById('inj-price').value=s.value;}
+function shMat(){const s=document.getElementById('sh-mat');if(s.value)document.getElementById('sh-price').value=s.value;}
+function dcMat(){const s=document.getElementById('dc-mat');if(s.value){const v=s.value.split('|');document.getElementById('dc-price').value=v[0];document.getElementById('dc-density').value=v[1];}}
+
+function resultHTML(title,subtitle,stats,rows,note){
+  let s=stats.map((s,i)=>`<div class="stat${i<2?' highlight':''}"><div class="stat-value">${s.v}</div><div class="stat-label">${s.l}</div></div>`).join('');
+  let t=rows.map(r=>`<tr><td>${r[0]}</td><td>¥${r[1]}</td><td class="pct">${r[2]}%<span class="bar" style="width:${Math.min(r[2],100)*0.8}px"></span></td></tr>`).join('');
+  return `<div class="result-header"><h3>${title}</h3><p>${subtitle}</p></div><div class="result-body"><div class="stats">${s}</div><table class="breakdown"><thead><tr><th>成本项</th><th>单件金额</th><th>占比</th></tr></thead><tbody>${t}</tbody></table>${note?`<div class="note-box"><span class="note-icon">💡</span><span class="note-text">${note}</span></div>`:''}</div>`;
+}
+function show(id,html){const b=document.getElementById(id);b.innerHTML=html;b.classList.add('show');b.scrollIntoView({behavior:'smooth',block:'nearest'});}
+
+// ===== 谈判建议 =====
+function showTips(id,tips){
+  const icons={cost:'💰',delivery:'⏱️',logistics:'🚚',quality:'🔍',strategy:'🎯'};
+  const cls={cost:'cost',delivery:'delivery',logistics:'logistics',quality:'quality',strategy:'strategy'};
+  let html=`<div class="tips-header"><span>🎯</span><h3>采购谈判建议</h3><span class="badge">基于当前报价分析</span></div><div class="tips-body">`;
+  tips.forEach(t=>{html+=`<div class="tip-item"><div class="tip-icon ${cls[t.type]}">${icons[t.type]}</div><div class="tip-content"><div class="tip-title">${t.title}</div><div class="tip-text">${t.text}</div></div></div>`;});
+  html+=`</div>`;
+  const b=document.getElementById(id);b.innerHTML=html;b.classList.add('show');
+}
+function cncTips(mat,proc,surf,unit,qty){
+  const tips=[];
+  const matPct=mat/unit*100;
+  if(matPct>40)tips.push({type:'cost',title:'材料成本占比高('+matPct.toFixed(0)+'%)',text:'材料是大头，谈判重点：①与供应商谈材料代购（批量采购价更低）；②评估替代材料；③优化设计提高材料利用率。'});
+  else tips.push({type:'cost',title:'加工费是主要成本('+((proc/unit*100).toFixed(0))+'%)',text:'加工费占比高：①要求按工时明细报价；②大批量谈阶梯价（500件+降15~20%）；③评估是否可用更经济设备。'});
+  if(surf>0)tips.push({type:'cost',title:'表面处理费用可观',text:'①确认处理方式是否必要（发黑比阳极便宜60%）；②多家比价；③批量大时谈年框价。'});
+  tips.push({type:'delivery',title:'交期谈判要点',text:'①确认供应商是否有材料库存（有料缩短3~5天）；②加急费+30~50%，可谈"优先排产"替代；③延期扣款1~3%/天写入合同。'});
+  tips.push({type:'quality',title:'品质管控建议',text:'①首件全尺寸检测(FAI)，关键尺寸CPK≥1.33；②要求材质证明和表面处理检测报告；③大批量建议驻厂巡检。'});
+  if(qty>=500)tips.push({type:'strategy',title:'大批量谈判筹码',text:'订单'+qty+'件具备议价能力：①年度框架协议锁价；②模具/治具费减免；③账期月结30~60天；④引入第二供应商形成竞争。'});
+  else tips.push({type:'strategy',title:'小批量谈判策略',text:'订单较小('+qty+'件)：①打包多个零件一起谈；②承诺后续增量换当前优惠价；③找专注小批量的供应商。'});
+  showTips('cnc-tips',tips);
+}
+function injTips(mat,mach,post,moldAm,unit,qty){
+  const tips=[];
+  tips.push({type:'cost',title:'注塑成本拆解关键',text:'材料占'+(mat/unit*100).toFixed(0)+'%，机台占'+(mach/unit*100).toFixed(0)+'%。①确认水口料回掺比例（回料价约新料50~70%）；②多穴模降机台分摊；③后加工逐项确认必要性。'});
+  if(moldAm>0)tips.push({type:'cost',title:'模具费分摊谈判',text:'模具是大投资。①分两期付（50%开模+50%试模通过）；②确认模具归属权（付清后归甲方）；③模具寿命保证；④免费维修保养期。'});
+  tips.push({type:'delivery',title:'注塑交期管理',text:'①新模具25~45天；②已有模具量产5~10天；③试模T0→T1预留3~5天；④旺季提前2~3周下单。'});
+  tips.push({type:'quality',title:'注塑品质要点',text:'①首件报告(尺寸/重量/外观)；②确认缩水率和变形量；③外观件色差ΔE≤1.5；④批量前确认SPC管控。'});
+  tips.push({type:'logistics',title:'包装运输注意',text:'①注塑件易刮花，需隔板/吸塑盘保护；②大批量谈供应商送货上门；③出口件注意防潮防霉。'});
+  showTips('inj-tips',tips);
+}
+function shTips(mat,proc,surf,unit,qty){
+  const tips=[];
+  tips.push({type:'cost',title:'钣金成本优化方向',text:'材料占'+(mat/unit*100).toFixed(0)+'%。①优化排样提高利用率；②大批量评估开冲压模具替代激光（降50%+）；③减少折弯刀数。'});
+  if(surf>0)tips.push({type:'cost',title:'表面处理谈判',text:'①喷粉比喷漆便宜30%且环保；②面积计算方式要明确；③特殊色加价，尽量选标准色。'});
+  tips.push({type:'delivery',title:'钣金交期管理',text:'①简单件3~5天，复杂件7~15天；②激光切割是瓶颈；③表面处理外协+2~5天；④大批量分批交付。'});
+  tips.push({type:'quality',title:'钣金品质重点',text:'①折弯角度公差±1°（精密±0.5°）；②焊缝打磨等级要明确；③喷粉附着力百格≥4B；④大批量要求CPK报告。'});
+  tips.push({type:'strategy',title:'供应商选择建议',text:'①根据批量选"激光+折弯"型或"冲压"型；②同时有激光和冲压能力的更灵活；③找"钣金+喷涂"一体化供应商减少物流成本。'});
+  showTips('sh-tips',tips);
+}
+function smtTips(unit,qty,tp,mode){
+  const tips=[];
+  tips.push({type:'cost',title:'SMT成本拆解',text:'点数费是核心('+tp+'点)。①确认点数规则（0201按1.5还是2点？差异15%）；②大批量谈点数打包价；③工程费/钢网费量大可减免。'});
+  if(mode==='ems')tips.push({type:'cost',title:'代工代料物料管理',text:'管理费5~10%。①关键IC自行采购；②要求BOM逐项报价；③确认损耗率标准。'});
+  tips.push({type:'quality',title:'PCBA品质管控',text:'①AOI全检标配，BGA必须X-Ray；②首件FAI报告；③IPC-A-610 Class 2基本标准；④FCT治具费确认归属。'});
+  tips.push({type:'delivery',title:'SMT交期管理',text:'①打样1~3天，小批量3~7天；②代工代料+7~15天备料；③BGA/QFN交期波动大；④拼板设计降单件成本。'});
+  tips.push({type:'strategy',title:'SMT供应商选择',text:'①来料加工选SMT+DIP一体化工厂；②代工代料选有元器件渠道的；③打样选嘉立创/捷配；④大批量选产能匹配的工厂。'});
+  showTips('smt-tips',tips);
+}
+function dcTips(mat,mach,moldAm,unit,qty){
+  const tips=[];
+  tips.push({type:'cost',title:'压铸成本关键',text:'材料占'+(mat/unit*100).toFixed(0)+'%。①优化浇排系统减少浇口/溢料重量；②评估薄壁设计减少用料；③ADC12最通用最便宜。'});
+  if(moldAm>0)tips.push({type:'cost',title:'模具投资谈判',text:'①模具寿命保证（铝≥10万模次，锌≥50万）；②维护费含在报价中；③产量达标返还模具费条款。'});
+  tips.push({type:'delivery',title:'压铸交期管理',text:'①新模具30~60天；②试模+修模7~10天；③量产单件30~60秒；④表面处理+3~7天。建议提前2个月启动。'});
+  tips.push({type:'quality',title:'压铸品质要点',text:'①气孔是最大风险，要求X光探伤；②气密性测试（密封件）；③盐雾测试（铝48h，锌96h）；④关键尺寸三坐标检测。'});
+  tips.push({type:'strategy',title:'压铸vs CNC决策',text:'批量≥5000件压铸比CNC降本50%+。①压铸模具投资大(5~150万)需摊入；②精度(±0.1mm)不如CNC；③<1000件CNC，>5000件压铸。'});
+  showTips('dc-tips',tips);
+}
+function whTips(unit,qty){
+  const tips=[];
+  tips.push({type:'cost',title:'线束成本优化',text:'劳动密集型，人工占比高。①标准化线材型号；②大批量上自动裁线+端子机（人工降60%）；③连接器选国产替代（便宜50%+）。'});
+  tips.push({type:'cost',title:'连接器选型策略',text:'①优先通用型号（JST XH/PH/VH）；②避免定制连接器；③端子和胶壳分开采购比成品便宜30%。'});
+  tips.push({type:'delivery',title:'线束交期关键',text:'①标准线束3~7天；②连接器交期是最大瓶颈（进口4~12周）；③提前备连接器安全库存；④大批量分批交付。'});
+  tips.push({type:'quality',title:'线束品质管控',text:'①100%导通测试；②端子拉力测试每批抽检；③要求线材UL认证和连接器规格书；④焊接点切片检测（首批）。'});
+  tips.push({type:'logistics',title:'线束包装物流',text:'①线束怕压变形，纸箱+隔板分层；②长线束卷绕+扎带固定；③防静电要求用防静电袋；④大批量JIT送货。'});
+  showTips('wh-tips',tips);
+}
+function pcbTips(unit,qty,layers){
+  const tips=[];
+  tips.push({type:'cost',title:'PCB成本优化',text:'价格随批量陡降(5→500片降60%+)。①合并订单；②绿色阻焊最便宜；③HASL比ENIG便宜40%，无BGA时优先HASL。'});
+  if(layers>=4)tips.push({type:'cost',title:'多层板降本策略',text:layers+'层板成本高。①评估能否减层（优化布线省2层）；②标准板厚1.6mm最便宜；③1oz铜厚基准，非大电流不加厚；④阻抗控制+10~20%。'});
+  tips.push({type:'delivery',title:'PCB交期管理',text:'①双面板打样1~3天；②4层板5~10天；③加急费+30~150%，提前规划；④板材库存影响交期。'});
+  tips.push({type:'quality',title:'PCB品质要点',text:'①切片报告（孔铜厚度）；②阻抗板必须阻抗测试报告；③确认IPC等级（Class 2/3）；④首件AOI+飞针测试。'});
+  tips.push({type:'strategy',title:'PCB供应商选择',text:'①打样嘉立创/捷配；②中批量华秋/捷配；③大批量景旺/鹏鼎；④高频板选有Rogers经验的专业厂。'});
+  showTips('pcb-tips',tips);
+}
+
+// ===== CNC =====
+function calcCnc(){
+  const mp=parseFloat(document.getElementById('cnc-price').value)||0;
+  const wt=parseFloat(document.getElementById('cnc-wt').value)||0;
+  const ut=parseFloat(document.getElementById('cnc-util').value)||0.75;
+  const qty=parseInt(document.getElementById('cnc-qty').value)||1;
+  const pr=parseFloat(document.getElementById('cnc-profit').value)||0.2;
+  const pkg=parseFloat(document.getElementById('cnc-pkg').value)||0;
+  const mat=wt/1000/ut*mp;
+  let proc=0;document.querySelectorAll('.proc-row').forEach(r=>{const rate=parseFloat(r.querySelector('.cnc-dev').value)||0;const t=parseFloat(r.querySelector('.cnc-time').value)||0;proc+=rate*t/60;});
+  let tool=parseFloat(document.getElementById('cnc-tool').value)||0;if(!tool)tool=proc*0.12;
+  let surf=0;document.querySelectorAll('#cnc-surfs .surface-row').forEach(r=>{const v=r.querySelector('.cnc-stype').value.split('|');const q=parseFloat(r.querySelector('.cnc-sqty').value)||0;if(v[1]!=='n')surf+=parseFloat(v[0])*q;});
+  const sub=mat+proc+tool+surf+pkg;const profit=sub*pr;const unit=sub+profit;
+  const batch=qty<=5?'打样':qty<=50?'小批量':qty<=500?'中批量':'大批量';
+  const avgT=Array.from(document.querySelectorAll('.proc-row')).reduce((s,r)=>s+(parseFloat(r.querySelector('.cnc-time').value)||0),0);
+  const days=Math.ceil(avgT*qty/60/8)+(surf>0?5:2)+2;
+  const total=unit*qty;
+  const p=n=>(n/unit*100).toFixed(1);
+  show('cnc-r',resultHTML('CNC机加工成本估算',`订单${qty}件 · ${batch} · 预计${days}天交期`,
+    [{v:'¥'+unit.toFixed(2),l:'单件成本'},{v:'¥'+total.toLocaleString(),l:`整批${qty}件`},{v:days+'天',l:'预计交期'},{v:batch,l:'批量级别'}],
+    [['📦 材料费',mat.toFixed(2),p(mat)],['⚙️ 加工费',proc.toFixed(2),p(proc)],['🔧 刀具损耗',tool.toFixed(2),p(tool)],['🎨 表面处理',surf.toFixed(2),p(surf)],['📦 包装运输',pkg.toFixed(2),p(pkg)],['💼 管理利润',profit.toFixed(2),p(profit)],['<b>合计</b>','<b>'+unit.toFixed(2)+'</b>','100']],
+    '价格受地区、供应商产能、材料行情波动影响，建议多家比价。'
+  ));
+  cncTips(mat,proc,surf,unit,qty);
+}
+
+// ===== 注塑 =====
+function calcInj(){
+  const mp=parseFloat(document.getElementById('inj-price').value)||0;
+  const wt=parseFloat(document.getElementById('inj-wt').value)||0;
+  const rn=parseFloat(document.getElementById('inj-runner').value)||0;
+  const mr=parseFloat(document.getElementById('inj-mach').value)||80;
+  const cy=parseFloat(document.getElementById('inj-cycle').value)||25;
+  const cv=parseInt(document.getElementById('inj-cav').value)||1;
+  const qty=parseInt(document.getElementById('inj-qty').value)||1;
+  const mold=parseFloat(document.getElementById('inj-mold').value)||0;
+  const pr=parseFloat(document.getElementById('inj-profit').value)||0.2;
+  const pkg=parseFloat(document.getElementById('inj-pkg').value)||0;
+  const mat=(wt+rn)*mp/1000*1.02/cv;
+  const mach=mr/3600*cy/cv;
+  let post=0;document.querySelectorAll('#inj-posts .surface-row').forEach(r=>{const u=parseFloat(r.querySelector('.inj-ptype').value)||0;const q=parseFloat(r.querySelector('.inj-pqty').value)||0;post+=u*q;});
+  const moldAm=qty>0?mold/qty:0;
+  const sub=mat+mach+post+moldAm+pkg;const profit=sub*pr;const unit=sub+profit;
+  const moldDays=mold>0?Math.ceil(mold/2000)+10:0;
+  const prodDays=Math.ceil(cy/cv*qty/3600/16)+2;
+  const days=moldDays+prodDays+3;
+  const total=unit*qty;
+  const p=n=>(n/unit*100).toFixed(1);
+  show('inj-r',resultHTML('注塑加工成本估算',`订单${qty}件 · ${cv}穴模 · 预计${days}天${mold>0?'(含模具'+moldDays+'天)':''}`,
+    [{v:'¥'+unit.toFixed(3),l:'单件成本'},{v:'¥'+total.toLocaleString(),l:`整批${qty}件`},{v:days+'天',l:'预计交期'},{v:'¥'+(mat+mach).toFixed(3),l:'单啤材料+机台'}],
+    [['🧪 材料费',mat.toFixed(3),p(mat)],['🏭 机台费',mach.toFixed(3),p(mach)],['✨ 后加工',post.toFixed(3),p(post)],['📐 模具分摊',moldAm.toFixed(3),p(moldAm)],['📦 包装运输',pkg.toFixed(3),p(pkg)],['💼 管理利润',profit.toFixed(3),p(profit)],['<b>合计</b>','<b>'+unit.toFixed(3)+'</b>','100']],
+    '模具费按总量分摊，产量越大单件越低。水口料回掺可降低材料成本。建议确认模具归属权。'
+  ));
+  injTips(mat,mach,post,moldAm,unit,qty);
+}
+
+// ===== 钣金 =====
+function calcSheet(){
+  const mp=parseFloat(document.getElementById('sh-price').value)||0;
+  const L=parseFloat(document.getElementById('sh-len').value)||0;
+  const W=parseFloat(document.getElementById('sh-wid').value)||0;
+  const thk=parseFloat(document.getElementById('sh-thk').value)||1.5;
+  const qty=parseInt(document.getElementById('sh-qty').value)||1;
+  const pr=parseFloat(document.getElementById('sh-profit').value)||0.15;
+  const asm=parseFloat(document.getElementById('sh-asm').value)||0;
+  const pkg=parseFloat(document.getElementById('sh-pkg').value)||0;
+  const dense=mp>20?2.7:7.85;
+  const mat=L/1000*W/1000*thk*dense*mp*1.1/1000;
+  const laser=parseFloat(document.getElementById('sh-laser').value)||0;
+  const lp=parseFloat(document.getElementById('sh-lp').value)||1.5;
+  const laserC=laser/1000*lp;
+  const bendC=(parseInt(document.getElementById('sh-bend').value)||0)*(parseFloat(document.getElementById('sh-bp').value)||0);
+  const holeC=(parseInt(document.getElementById('sh-hole').value)||0)*(parseFloat(document.getElementById('sh-hp').value)||0);
+  const weldC=(parseInt(document.getElementById('sh-weld').value)||0)*(parseFloat(document.getElementById('sh-wp').value)||0);
+  const deburr=parseFloat(document.getElementById('sh-deburr').value)||0;
+  const other=parseFloat(document.getElementById('sh-other').value)||0;
+  const proc=laserC+bendC+holeC+weldC+deburr+other;
+  let surf=0;document.querySelectorAll('#sh-surfs .surface-row').forEach(r=>{const v=r.querySelector('.sh-stype').value.split('|');const q=parseFloat(r.querySelector('.sh-sqty').value)||0;if(v[1]!=='n')surf+=parseFloat(v[0])*q;});
+  const sub=mat+proc+surf+asm+pkg;const profit=sub*pr;const unit=sub+profit;
+  const wt=(L/1000*W/1000*thk*dense).toFixed(3);
+  const days=(qty<=5?2:qty<=50?4:qty<=500?7:12)+(surf>0?3:0)+2;
+  const total=unit*qty;
+  const p=n=>(n/unit*100).toFixed(1);
+  show('sh-r',resultHTML('钣金加工成本估算',`订单${qty}件 · 材料${wt}kg · 预计${days}天`,
+    [{v:'¥'+unit.toFixed(2),l:'单件成本'},{v:'¥'+total.toLocaleString(),l:`整批${qty}件`},{v:days+'天',l:'预计交期'},{v:wt+' kg',l:'单件重量'}],
+    [['📦 材料费',mat.toFixed(2),p(mat)],['🔲 激光切割',laserC.toFixed(2),p(laserC)],['📐 折弯',bendC.toFixed(2),p(bendC)],['🔩 孔加工',holeC.toFixed(2),p(holeC)],['🔥 焊接',weldC.toFixed(2),p(weldC)],['✨ 去毛刺+其他',(deburr+other).toFixed(2),p(deburr+other)],['🎨 表面处理',surf.toFixed(2),p(surf)],['🔧 装配',asm.toFixed(2),p(asm)],['📦 包装运输',pkg.toFixed(2),p(pkg)],['💼 管理利润',profit.toFixed(2),p(profit)],['<b>合计</b>','<b>'+unit.toFixed(2)+'</b>','100']],
+    '展开尺寸和切割长度请按实际图纸计算。大批量建议评估开冲压模具替代激光切割。'
+  ));
+  shTips(mat,proc,surf,unit,qty);
+}
+
+// ===== SMT =====
+function calcSmt(){
+  const sides=parseInt(document.getElementById('smt-sides').value)||1;
+  const qty=parseInt(document.getElementById('smt-qty').value)||1;
+  const pr=parseFloat(document.getElementById('smt-profit').value)||0.12;
+  const eng=parseFloat(document.getElementById('smt-eng').value)||0;
+  const mode=document.getElementById('smt-mode').value;
+  const bom=parseFloat(document.getElementById('smt-bom').value)||0;
+  const dip=parseInt(document.getElementById('smt-dip').value)||0;
+  const dp=parseFloat(document.getElementById('smt-dp').value)||0.05;
+  const rwPins=parseInt(document.getElementById('smt-rw').value)||0;
+  const aoi=parseFloat(document.getElementById('smt-aoi').value)||0;
+  const fct=parseFloat(document.getElementById('smt-fct').value)||0;
+  const xr=parseFloat(document.getElementById('smt-xr').value)||0;
+  const ap=parseInt(document.getElementById('smt-ap').value)||0;
+  const as=parseInt(document.getElementById('smt-as').value)||0;
+  const ai=parseInt(document.getElementById('smt-ai').value)||0;
+  const ab=parseInt(document.getElementById('smt-ab').value)||0;
+  const ac=parseInt(document.getElementById('smt-ac').value)||0;
+  const bt=sides===2?(parseInt(document.getElementById('smt-bt').value)||0):0;
+  const tpA=ap+as+ai+ab+ac;const tp=tpA+bt;
+  let bc=qty<=10?2:qty<=50?1.3:qty<=200?1:qty<=1000?0.9:qty<=5000?0.8:0.7;
+  const bgaS=ab>0?0.015:0;
+  const rate=(0.012+bgaS)*bc;
+  const smtF=tp*rate;
+  const dipF=dip*dp;
+  const rwF=rwPins*0.1;
+  const testF=aoi*tp+fct+xr;
+  const engF=eng/qty;
+  let matM=0;if(mode==='ems')matM=bom*(bom>100?0.05:bom>10?0.07:0.09);
+  const sub=engF+smtF+dipF+rwF+testF+matM;
+  const profit=sub*pr;const unit=sub+profit;
+  const unitBom=mode==='ems'?unit+bom:unit;
+  const total=unitBom*qty;
+  const days=Math.ceil(tp*qty/50000/8)+3+(mode==='ems'?7:2);
+  const batch=qty<=10?'打样':qty<=50?'小批量':qty<=500?'中批量':'大批量';
+  const p=n=>(n/unit*100).toFixed(1);
+  show('smt-r',resultHTML('SMT贴片成本估算',`${mode==='ems'?'代工代料':'来料加工'} · ${tp}点 · ${batch} · 预计${days}天`,
+    [{v:'¥'+unitBom.toFixed(2),l:'单件成本'+(mode==='ems'?'(含料)':'')},{v:'¥'+total.toLocaleString(),l:`整批${qty}片`},{v:days+'天',l:'预计交期'},{v:tp+'点',l:`总焊盘(A:${tpA} B:${bt})`}],
+    [['📋 工程费分摊',engF.toFixed(3),p(engF)],['📌 SMT贴片',smtF.toFixed(2),p(smtF)],...(dipF>0?[['🔌 DIP插件',dipF.toFixed(2),p(dipF)]]:[]),...(rwF>0?[['🔧 后焊',rwF.toFixed(2),p(rwF)]]:[]),['🧪 测试费',testF.toFixed(2),p(testF)],...(matM>0?[['💰 物料管理',matM.toFixed(2),p(matM)]]:[]),['💼 管理利润',profit.toFixed(2),p(profit)],...(mode==='ems'?[['📦 BOM物料',bom.toFixed(2),'—']]:[]),['<b>合计</b>','<b>'+unitBom.toFixed(2)+'</b>','100']],
+    'SMT报价受元件密度、精度、BGA数量影响大。代工代料需确认物料损耗率。建议提供Gerber/BOM获取精确报价。'
+  ));
+  smtTips(unit,qty,tp,mode);
+}
+
+// ===== 压铸 =====
+function calcDc(){
+  const mp=parseFloat(document.getElementById('dc-price').value)||0;
+  const wt=parseFloat(document.getElementById('dc-wt').value)||0;
+  const runner=parseFloat(document.getElementById('dc-runner').value)||0;
+  const mr=parseFloat(document.getElementById('dc-mach').value)||180;
+  const cy=parseFloat(document.getElementById('dc-cycle').value)||40;
+  const cv=parseInt(document.getElementById('dc-cav').value)||1;
+  const qty=parseInt(document.getElementById('dc-qty').value)||1;
+  const mold=parseFloat(document.getElementById('dc-mold').value)||0;
+  const pr=parseFloat(document.getElementById('dc-profit').value)||0.15;
+  const pkg=parseFloat(document.getElementById('dc-pkg').value)||0;
+  const deburr=parseFloat(document.getElementById('dc-deburr').value)||0;
+  const cnc=parseFloat(document.getElementById('dc-cnc').value)||0;
+  const tap=parseFloat(document.getElementById('dc-tap').value)||0;
+  const mat=(wt+runner)*mp/1000*1.03/cv;
+  const mach=mr/3600*cy/cv;
+  const moldAm=qty>0?mold/qty:0;
+  let surf=0;document.querySelectorAll('#dc-surfs .surface-row').forEach(r=>{const v=r.querySelector('.dc-stype').value.split('|');const q=parseFloat(r.querySelector('.dc-sqty').value)||0;if(v[1]!=='n')surf+=parseFloat(v[0])*q;});
+  const proc=deburr+cnc+tap;
+  const sub=mat+mach+moldAm+proc+surf+pkg;const profit=sub*pr;const unit=sub+profit;
+  const total=unit*qty;
+  const moldDays=mold>0?Math.ceil(mold/3000)+15:0;
+  const prodDays=Math.ceil(cy/cv*qty/3600/16)+3;
+  const days=moldDays+prodDays+3;
+  const p=n=>(n/unit*100).toFixed(1);
+  show('dc-r',resultHTML('压铸成本估算',`订单${qty}件 · ${cv}穴 · 预计${days}天${mold>0?'(含模具'+moldDays+'天)':''}`,
+    [{v:'¥'+unit.toFixed(2),l:'单件成本'},{v:'¥'+total.toLocaleString(),l:`整批${qty}件`},{v:days+'天',l:'预计交期'},{v:'¥'+(mat+mach).toFixed(2),l:'单啤材料+机台'}],
+    [['🧪 材料费',mat.toFixed(2),p(mat)],['🏭 机台费',mach.toFixed(2),p(mach)],['📐 模具分摊',moldAm.toFixed(2),p(moldAm)],['🔧 后加工',proc.toFixed(2),p(proc)],['🎨 表面处理',surf.toFixed(2),p(surf)],['📦 包装运输',pkg.toFixed(2),p(pkg)],['💼 管理利润',profit.toFixed(2),p(profit)],['<b>合计</b>','<b>'+unit.toFixed(2)+'</b>','100']],
+    '压铸模具是一次性大投资，产量越大单件越低。ADC12最通用，大批量可比CNC降本50%+。'
+  ));
+  dcTips(mat,mach,moldAm,unit,qty);
+}
+
+// ===== 线束 =====
+function calcWh(){
+  const qty=parseInt(document.getElementById('wh-qty').value)||1;
+  const pr=parseFloat(document.getElementById('wh-profit').value)||0.15;
+  let wireCost=0;document.querySelectorAll('#wh-wires .surface-row').forEach(r=>{
+    const len=parseFloat(r.querySelector('.wh-len').value)||0;
+    const price=parseFloat(r.querySelector('.wh-wprice').value)||0;
+    const cnt=parseInt(r.querySelector('.wh-cnt').value)||1;
+    wireCost+=len*price*cnt/1000;
+  });
+  const connCost=parseFloat(document.getElementById('wh-conn').value)||0;
+  const termCost=parseFloat(document.getElementById('wh-term').value)||0;
+  const solderCost=parseFloat(document.getElementById('wh-solder').value)||0;
+  const asmCost=parseFloat(document.getElementById('wh-asm').value)||0;
+  const wrapCost=parseFloat(document.getElementById('wh-wrap').value)||0;
+  const testCost=parseFloat(document.getElementById('wh-test').value)||0;
+  const pkg=parseFloat(document.getElementById('wh-pkg').value)||0;
+  const sub=wireCost+connCost+termCost+solderCost+asmCost+wrapCost+testCost+pkg;
+  const profit=sub*pr;const unit=sub+profit;const total=unit*qty;
+  const days=qty<=100?3:qty<=1000?5:qty<=5000?7:10;
+  const p=n=>(n/unit*100).toFixed(1);
+  show('wh-r',resultHTML('线束加工成本估算',`订单${qty}条 · 预计${days}天`,
+    [{v:'¥'+unit.toFixed(2),l:'单件成本'},{v:'¥'+total.toLocaleString(),l:`整批${qty}条`},{v:days+'天',l:'预计交期'},{v:'¥'+(wireCost+connCost).toFixed(2),l:'材料+连接器'}],
+    [['🔌 线材费',wireCost.toFixed(2),p(wireCost)],['🔗 连接器',connCost.toFixed(2),p(connCost)],['📌 端子压接',termCost.toFixed(2),p(termCost)],['🔧 焊接',solderCost.toFixed(2),p(solderCost)],['🔩 组装',asmCost.toFixed(2),p(asmCost)],['📦 包扎',wrapCost.toFixed(2),p(wrapCost)],['🧪 测试',testCost.toFixed(2),p(testCost)],['📦 包装',pkg.toFixed(2),p(pkg)],['💼 管理利润',profit.toFixed(2),p(profit)],['<b>合计</b>','<b>'+unit.toFixed(2)+'</b>','100']],
+    '线束是劳动密集型，组装和辅材占比大。大批量可上自动裁线+端子机降本。连接器选型直接影响总成本和交期。'
+  ));
+  whTips(unit,qty);
+}
+
+// ===== PCB =====
+function calcPcb(){
+  const layers=parseInt(document.getElementById('pcb-layers').value)||2;
+  const L=parseFloat(document.getElementById('pcb-len').value)||100;
+  const W=parseFloat(document.getElementById('pcb-wid').value)||80;
+  const panel=parseInt(document.getElementById('pcb-panel').value)||1;
+  const qty=parseInt(document.getElementById('pcb-qty').value)||100;
+  const surft=document.getElementById('pcb-surf').value;
+  const color=document.getElementById('pcb-color').value;
+  const copper=parseFloat(document.getElementById('pcb-copper').value)||1;
+  const minWidth=parseFloat(document.getElementById('pcb-minw').value)||6;
+  const minHole=parseFloat(document.getElementById('pcb-minh').value)||0.3;
+  const boardType=document.getElementById('pcb-type').value;
+  const pr=parseFloat(document.getElementById('pcb-profit').value)||0.12;
+  const rush=parseFloat(document.getElementById('pcb-rush').value)||1;
+  let basePrice=0;
+  if(layers===1)basePrice=2.0;else if(layers===2)basePrice=3.5;
+  else if(layers===4)basePrice=9.0;else if(layers===6)basePrice=14.0;
+  else if(layers===8)basePrice=22.0;else if(layers===10)basePrice=35.0;else basePrice=50.0;
+  let typeCoeff=1.0;
+  if(boardType==='al')typeCoeff=2.5;else if(boardType==='hf')typeCoeff=8.0;
+  else if(boardType==='fpc')typeCoeff=3.0;else if(boardType==='hfr4')typeCoeff=1.5;
+  let surfAdd=0;
+  if(surft==='enig')surfAdd=4.0;else if(surft==='leadfree')surfAdd=1.0;
+  else if(surft==='ag')surfAdd=1.5;else if(surft==='sn')surfAdd=1.5;
+  let colorAdd=color!=='green'?1.0:0;
+  let copperCoeff=1.0;
+  if(copper===1.5)copperCoeff=1.2;else if(copper===2)copperCoeff=1.4;else if(copper===3)copperCoeff=2.0;
+  let widthCoeff=1.0;
+  if(minWidth<=3)widthCoeff=2.5;else if(minWidth<=4)widthCoeff=1.4;else if(minWidth<=5)widthCoeff=1.15;
+  let holeCoeff=1.0;
+  if(minHole<=0.15)holeCoeff=2.0;else if(minHole<=0.2)holeCoeff=1.3;else if(minHole<=0.25)holeCoeff=1.1;
+  let batchCoeff=1.0;
+  if(qty<=10)batchCoeff=2.0;else if(qty<=30)batchCoeff=1.5;else if(qty<=100)batchCoeff=1.0;
+  else if(qty<=500)batchCoeff=0.75;else if(qty<=2000)batchCoeff=0.6;else batchCoeff=0.5;
+  const panelL=L*Math.ceil(Math.sqrt(panel))+12*(Math.ceil(Math.sqrt(panel))-1);
+  const panelW=W*Math.ceil(panel/Math.ceil(Math.sqrt(panel)))+12*(Math.ceil(panel/Math.ceil(Math.sqrt(panel)))-1);
+  const panelArea=panelL*panelW/10000;
+  const panels=Math.ceil(qty/panel);
+  const totalArea=panelArea*panels;
+  const unitPrice=basePrice*typeCoeff*widthCoeff*holeCoeff*copperCoeff*batchCoeff;
+  const totalBoard=totalArea*(unitPrice+surfAdd+colorAdd)*rush;
+  const testFee=qty*0.1;
+  const moldFee=qty>200?500:0;
+  const unitBoard=(totalBoard+testFee+moldFee)/qty;
+  const profit=unitBoard*pr;const unit=unitBoard+profit;const total=unit*qty;
+  const days=Math.ceil((layers<=2?(qty<=100?3:5):(layers<=4?(qty<=100?5:8):(layers<=6?10:15)))/rush);
+  const layerName=layers<=1?'单面板':layers<=2?'双面板':layers+'层板';
+  const p=n=>(n/unit*100).toFixed(1);
+  show('pcb-r',resultHTML('PCB制板成本估算',`${layerName} · ${L}×${W}mm · ${panel}拼 · ${qty}片 · 预计${days}天`,
+    [{v:'¥'+unit.toFixed(2),l:'单片成本'},{v:'¥'+total.toLocaleString(),l:`整批${qty}片`},{v:days+'天',l:'预计交期'},{v:totalArea.toFixed(1)+'dm²',l:'总计价面积'}],
+    [['📋 板材+工艺',(totalBoard/qty).toFixed(2),p(totalBoard/qty)],['🧪 测试费',(testFee/qty).toFixed(3),p(testFee/qty)],['📐 模具分摊',(moldFee/qty).toFixed(3),p(moldFee/qty)],['💼 管理利润',profit.toFixed(2),p(profit)],['<b>合计</b>','<b>'+unit.toFixed(2)+'</b>','100']],
+    'PCB价格随批量下降明显(5→500片可降60%+)。ENIG/高Tg/阻抗控制等加价显著。建议设计预留工艺窗口，优先选绿色阻焊。'
+  ));
+  pcbTips(unit,qty,layers);
+}
+</script>
+</body>
+</html>
+</script>
+</body>
+</html>
