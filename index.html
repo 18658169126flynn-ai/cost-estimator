@@ -151,6 +151,7 @@ body { font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif; backgroun
   .stats { grid-template-columns:repeat(2,1fr); }
   .proc-row { grid-template-columns:1fr 100px 36px; }
   .surface-row { grid-template-columns:1fr 80px 40px 36px; }
+  .hole-row { grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr 36px !important; }
   .card { padding:18px; }
   .container { padding:0 12px; }
 }
@@ -224,10 +225,66 @@ body { font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif; backgroun
     <button class="btn-add" onclick="addProc()">＋ 添加工序</button>
   </div>
 
+  <!-- 线切割加工 -->
   <div class="card">
-    <div class="card-header"><div class="card-icon orange">🎨</div><div><div class="card-title">表面处理</div><div class="card-subtitle">可选，可添加多项</div></div></div>
+    <div class="card-header"><div class="card-icon cyan">✂️</div><div><div class="card-title">线切割加工（面积计价）</div><div class="card-subtitle">按切割面积×系数，比工时更精确</div></div></div>
+    <div class="form-grid g2">
+      <div class="field"><label>线割类型</label><select id="wedm-type" onchange="wedmType()"><option value="">不使用线切割</option><option value="slow" selected>慢走丝 ±0.005mm</option><option value="mid">中走丝 ±0.01mm</option><option value="fast">快走丝 ±0.02mm</option></select></div>
+      <div class="field"><label>切割模式</label><select id="wedm-pass"><option value="1">割一刀</option><option value="1.2">割一修一</option><option value="1.5">割一修二</option><option value="1.8">割一修三</option></select></div>
+    </div>
+    <div class="form-grid g2" style="margin-top:14px">
+      <div class="field"><label>切割长度 (mm)</label><input type="number" id="wedm-len" value="0" step="1"><div class="hint">外形轮廓总长度</div></div>
+      <div class="field"><label>截面厚度 (mm)</label><input type="number" id="wedm-thk" value="20" step="1"></div>
+    </div>
+    <div class="form-grid g4" style="margin-top:14px">
+      <div class="field"><label>线径</label><select id="wedm-wire"><option value="1" selected>Φ0.25</option><option value="1.5">Φ0.20</option><option value="2">Φ0.15</option><option value="3">Φ0.10</option></select></div>
+      <div class="field"><label>角度</label><select id="wedm-angle"><option value="1" selected>0°</option><option value="1.5">0°~15°</option><option value="2">>15°</option></select></div>
+      <div class="field"><label>材料硬度</label><select id="wedm-hrc"><option value="1" selected><80HRC</option><option value="2">>80HRC</option></select></div>
+      <div class="field"><label>厚度级别</label><select id="wedm-tclass"><option value="1" selected><80mm</option><option value="1.5">80~100mm</option><option value="2">>100mm</option></select></div>
+    </div>
+    <div class="form-grid g2" style="margin-top:14px">
+      <div class="field"><label>小孔数 (Φ<10mm, <20mm厚)</label><input type="number" id="wedm-shole" value="0" step="1"></div>
+      <div class="field"><label>侧割小孔数</label><input type="number" id="wedm-sshole" value="0" step="1"></div>
+    </div>
+    <div class="note-box" style="margin-top:12px"><span class="note-icon">📐</span><span class="note-text">费用 = 切割长度×截面厚度×基准单价×线径系数×角度系数×材料系数×厚度系数 + 小孔费用。小孔不足最低价按最低价计。</span></div>
+  </div>
+
+  <!-- 磨床加工 -->
+  <div class="card">
+    <div class="card-header"><div class="card-icon blue">🫧</div><div><div class="card-title">磨床加工（面积计价）</div><div class="card-subtitle">平面磨/大水磨/龙门磨，按磨削面积计算</div></div></div>
+    <div class="form-grid g2">
+      <div class="field"><label>磨床类型</label><select id="grind-type"><option value="0">不使用磨床</option><option value="2" selected>平面磨床 (350×150)</option><option value="2">大水磨 (600×1500)</option><option value="0.15">龙门磨 (2000×4000)</option></select></div>
+      <div class="field"><label>磨削精度</label><select id="grind-prec"><option value="1" selected>普通磨削</option><option value="1.5">精密磨削</option><option value="2">热处理材质磨削</option></select></div>
+    </div>
+    <div id="grind-faces">
+      <div class="surface-row"><div class="field"><label>磨削面面积 (mm²)</label><input type="number" class="grind-area" value="0" step="100"></div><div class="field"><label>单价(元/10000mm²)</label><input type="text" class="grind-price" value="2" readonly style="background:#f1f5f9"></div><div class="unit-label">面</div><button class="remove-row" onclick="rmRow(this)">×</button></div>
+    </div>
+    <button class="btn-add" onclick="addGrind()">＋ 添加磨削面</button>
+    <div class="hint" style="margin-top:8px">单个面不足10000mm²按10000mm²计算。龙门磨公式不同：费用=长×宽×2÷645×难度系数。</div>
+  </div>
+
+  <!-- 孔加工明细 -->
+  <div class="card">
+    <div class="card-header"><div class="card-icon green">🕳️</div><div><div class="card-title">孔加工明细（系数化计价）</div><div class="card-subtitle">过孔/沉头/攻牙/盲孔精孔，四级系数</div></div></div>
+    <div id="cnc-holes">
+      <div class="hole-row" style="display:grid;grid-template-columns:1fr 80px 70px 70px 70px 50px 40px;gap:8px;align-items:end;margin-bottom:10px;padding:10px 12px;background:var(--surface-alt);border-radius:var(--radius-sm);border:1px solid var(--border)">
+        <div class="field"><label>孔类型</label><select class="hole-type"><option value="1.5" selected>过孔 (¥1.5)</option><option value="2">沉头孔 (¥2)</option><option value="3">攻牙孔 (¥3)</option><option value="10">盲孔精孔≤Φ12深≤10</option><option value="15">盲孔精孔≤Φ12深>10</option><option value="20">盲孔精孔>Φ12深≤10</option><option value="25">盲孔精孔>Φ12深>10</option></select></div>
+        <div class="field"><label>Φ/M</label><select class="hole-dia"><option value="1" selected>≤Φ12/M12</option><option value="2">>Φ12/M12</option></select></div>
+        <div class="field"><label>孔深mm</label><input type="number" class="hole-depth" value="10" step="1"></div>
+        <div class="field"><label>材料</label><select class="hole-mat"><option value="1" selected><28HRC钢</option><option value="2">>28HRC钢</option><option value="0.8">铝/非金属</option></select></div>
+        <div class="field"><label>数量</label><input type="number" class="hole-cnt" value="10" step="1" onchange="holeCountChange(this)"></div>
+        <div class="field"><label>系数</label><input type="text" class="hole-coeff" value="1.0" readonly style="background:#f1f5f9;font-size:11px"></div>
+        <button class="remove-row" onclick="rmRow(this)">×</button>
+      </div>
+    </div>
+    <button class="btn-add" onclick="addHole()">＋ 添加孔类型</button>
+    <div class="hint" style="margin-top:8px">孔类费用 = 基准单价 × 孔径系数 × 孔深系数 × 材料系数 × 数量系数 × 数量。盲孔精孔不参与系数计算，按固定单价。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon orange">🎨</div><div><div class="card-title">表面处理</div><div class="card-subtitle">可选，可添加多项（价格已按PPT标准更新）</div></div></div>
     <div id="cnc-surfs">
-      <div class="surface-row"><div class="field"><label>处理方式</label><select class="cnc-stype"><option value="0|n">无</option><option value="12|kg">阳极氧化 ¥12/kg</option><option value="15|kg">硬质阳极 ¥15/kg</option><option value="23|kg">彩色阳极 ¥23/kg</option><option value="20|kg">镀镍(铝) ¥20/kg</option><option value="12|kg">镀镍(铁) ¥12/kg</option><option value="1.5|kg">发黑 ¥1.5/kg</option><option value="4|kg">镀锌 ¥4/kg</option><option value="50|m2">喷漆 ¥50/m²</option><option value="30|m2">喷粉 ¥30/m²</option><option value="20|m2">电泳 ¥20/m²</option><option value="2|kg">喷砂 ¥2/kg</option></select></div><div class="field"><label>数量</label><input type="number" class="cnc-sqty" value="0" step="0.1"></div><div class="unit-label">kg/m²</div><button class="remove-row" onclick="rmRow(this)" title="删除">×</button></div>
+      <div class="surface-row"><div class="field"><label>处理方式</label><select class="cnc-stype"><option value="0|n">无</option><optgroup label="钢件镀层"><option value="5|kg">镀镍 ¥5/kg</option><option value="3|kg">镀铬 ¥3/kg</option><option value="3|kg">发黑 ¥3/kg</option><option value="50|h">抛光 ¥50/h</option><option value="25|kg">QPQ ¥25/kg</option></optgroup><optgroup label="铝件阳极"><option value="8|kg">本色氧化 ¥8/kg</option><option value="18|kg">喷砂亮银 ¥18/kg</option><option value="19|kg">硬质氧化 ¥19/kg</option><option value="16|kg">黑色氧化 ¥16/kg</option><option value="30|kg">黑色硬质氧化 ¥30/kg</option><option value="8|kg">喷砂本色 ¥8/kg</option><option value="23|kg">喷砂硬质氧化 ¥23/kg</option><option value="23|kg">其他彩色 ¥23/kg</option></optgroup><optgroup label="镀钛"><option value="4|cm">TIN ¥4/cm²</option><option value="5|cm">AC ¥5/cm²</option><option value="6|cm">DLC ¥6/cm²</option></optgroup><optgroup label="其他"><option value="50|m2">喷漆 ¥50/m²</option><option value="30|m2">喷粉 ¥30/m²</option><option value="20|m2">电泳 ¥20/m²</option><option value="2|kg">喷砂 ¥2/kg</option><option value="1|pcs">激光刻字 ¥1/件</option></optgroup></select></div><div class="field"><label>数量</label><input type="number" class="cnc-sqty" value="0" step="0.1"></div><div class="unit-label">kg/m²/cm/h</div><button class="remove-row" onclick="rmRow(this)" title="删除">×</button></div>
     </div>
     <button class="btn-add" onclick="addSurf('cnc')">＋ 添加处理</button>
   </div>
@@ -238,6 +295,10 @@ body { font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif; backgroun
       <div class="field"><label>管理利润率</label><select id="cnc-profit"><option value="0.15">15%</option><option value="0.20" selected>20%</option><option value="0.25">25%</option><option value="0.30">30%</option></select></div>
       <div class="field"><label>刀具损耗费 (元)</label><input type="number" id="cnc-tool" value="0" step="1"><div class="hint">0 = 自动估算(加工费12%)</div></div>
       <div class="field"><label>包装运输 (元/件)</label><input type="number" id="cnc-pkg" value="2" step="0.5"></div>
+    </div>
+    <div class="form-grid g2" style="margin-top:14px">
+      <div class="field"><label>批量折扣</label><select id="cnc-batch"><option value="1" selected>1-5件 (无折扣)</option><option value="0.95">6-10件 (95折)</option><option value="0.9">11-30件 (9折)</option><option value="0.85">31-50件 (85折)</option><option value="0.8">51-100件 (8折)</option><option value="0.7">100件+ (7折)</option></select></div>
+      <div class="field"><label>热处理 (元)</label><input type="number" id="cnc-heat" value="0" step="1"><div class="hint">真空8元/kg 调制4元/kg 深冷16元/kg</div></div>
     </div>
   </div>
 
@@ -543,10 +604,15 @@ function switchTab(id,el){
   el.classList.add('active');
   document.getElementById('p-'+id).classList.add('active');
 }
-function rmRow(b){const r=b.closest('.proc-row,.surface-row');if(r.parentElement.children.length>1)r.remove();}
-function addProc(){const h=document.querySelector('.proc-row').outerHTML;const d=document.createElement('div');d.innerHTML=h;const r=d.firstElementChild;r.querySelector('.cnc-time').value=20;document.getElementById('cnc-procs').appendChild(r);}
+function rmRow(b){const r=b.closest('.proc-row,.surface-row,.hole-row');if(r.parentElement.children.length>1)r.remove();}
+function addProc(){const h=document.querySelector('#cnc-procs .proc-row').outerHTML;const d=document.createElement('div');d.innerHTML=h;const r=d.firstElementChild;r.querySelector('.cnc-time').value=20;document.getElementById('cnc-procs').appendChild(r);}
 function addSurf(prefix){let src,cont;if(prefix==='cnc'){src=document.querySelector('#cnc-surfs .surface-row');cont=document.getElementById('cnc-surfs');}else if(prefix==='inj'){src=document.querySelector('#inj-posts .surface-row');cont=document.getElementById('inj-posts');}else if(prefix==='dc'){src=document.querySelector('#dc-surfs .surface-row');cont=document.getElementById('dc-surfs');}else{src=document.querySelector('#sh-surfs .surface-row');cont=document.getElementById('sh-surfs');}const r=src.cloneNode(true);r.querySelectorAll('input').forEach(i=>i.value=0);cont.appendChild(r);}
 function addWh(){const r=document.querySelector('#wh-wires .surface-row').cloneNode(true);document.getElementById('wh-wires').appendChild(r);}
+// New helpers
+function addGrind(){const r=document.querySelector('#grind-faces .surface-row').cloneNode(true);r.querySelector('.grind-area').value=0;document.getElementById('grind-faces').appendChild(r);}
+function addHole(){const r=document.querySelector('#cnc-holes .hole-row').cloneNode(true);r.querySelector('.hole-cnt').value=10;r.querySelector('.hole-coeff').value='1.0';document.getElementById('cnc-holes').appendChild(r);}
+function holeCountChange(el){const r=el.closest('.hole-row');const base=parseFloat(r.querySelector('.hole-type').value)||0;const dia=parseFloat(r.querySelector('.hole-dia').value)||1;const depth=parseFloat(r.querySelector('.hole-depth').value)||10;const matK=parseFloat(r.querySelector('.hole-mat').value)||1;const cnt=parseInt(r.querySelector('.hole-cnt').value)||0;if(base>=10){r.querySelector('.hole-coeff').value='固定';return;}const depthK=Math.min(Math.ceil(depth/10),5);const cntK=cnt<=50?1:cnt<=100?0.8:cnt<=150?0.6:0.5;r.querySelector('.hole-coeff').value=(dia*matK*depthK*cntK).toFixed(2);}
+function wedmType(){const t=document.getElementById('wedm-type').value;if(!t||t==='0'){document.getElementById('wedm-len').value=0;return;}}
 function cncMat(){const s=document.getElementById('cnc-mat');if(s.value)document.getElementById('cnc-price').value=s.value;}
 function injMat(){const s=document.getElementById('inj-mat');if(s.value)document.getElementById('inj-price').value=s.value;}
 function shMat(){const s=document.getElementById('sh-mat');if(s.value)document.getElementById('sh-price').value=s.value;}
@@ -643,22 +709,92 @@ function calcCnc(){
   const qty=parseInt(document.getElementById('cnc-qty').value)||1;
   const pr=parseFloat(document.getElementById('cnc-profit').value)||0.2;
   const pkg=parseFloat(document.getElementById('cnc-pkg').value)||0;
+  const batchD=parseFloat(document.getElementById('cnc-batch').value)||1;
+  const heat=parseFloat(document.getElementById('cnc-heat').value)||0;
   const mat=wt/1000/ut*mp;
-  let proc=0;document.querySelectorAll('.proc-row').forEach(r=>{const rate=parseFloat(r.querySelector('.cnc-dev').value)||0;const t=parseFloat(r.querySelector('.cnc-time').value)||0;proc+=rate*t/60;});
+  let proc=0;document.querySelectorAll('#cnc-procs .proc-row').forEach(r=>{const rate=parseFloat(r.querySelector('.cnc-dev').value)||0;const t=parseFloat(r.querySelector('.cnc-time').value)||0;proc+=rate*t/60;});
   let tool=parseFloat(document.getElementById('cnc-tool').value)||0;if(!tool)tool=proc*0.12;
-  let surf=0;document.querySelectorAll('#cnc-surfs .surface-row').forEach(r=>{const v=r.querySelector('.cnc-stype').value.split('|');const q=parseFloat(r.querySelector('.cnc-sqty').value)||0;if(v[1]!=='n')surf+=parseFloat(v[0])*q;});
-  const sub=mat+proc+tool+surf+pkg;const profit=sub*pr;const unit=sub+profit;
+
+  // 线切割
+  let wedm=0;
+  const wedmType=document.getElementById('wedm-type').value;
+  if(wedmType&&wedmType!=='0'){
+    const wedmLen=parseFloat(document.getElementById('wedm-len').value)||0;
+    const wedmThk=parseFloat(document.getElementById('wedm-thk').value)||0;
+    const wedmPass=parseFloat(document.getElementById('wedm-pass').value)||1;
+    const wedmWire=parseFloat(document.getElementById('wedm-wire').value)||1;
+    const wedmAngle=parseFloat(document.getElementById('wedm-angle').value)||1;
+    const wedmHrc=parseFloat(document.getElementById('wedm-hrc').value)||1;
+    const wedmTclass=parseFloat(document.getElementById('wedm-tclass').value)||1;
+    const wedmShole=parseInt(document.getElementById('wedm-shole').value)||0;
+    const wedmSshole=parseInt(document.getElementById('wedm-sshole').value)||0;
+    const baseRates={slow:0.018,mid:0.008,fast:0.005};
+    const holeRates={slow:[9,12,15],mid:[6,8,9],fast:[6,6,6]};
+    const sholeRates={slow:[35,'—'],mid:[15,'—'],fast:[15,'—']};
+    const passIdx=Math.min(parseInt(document.getElementById('wedm-pass').value)-1,2);
+    wedm=wedmLen*wedmThk*baseRates[wedmType]*wedmPass*wedmWire*wedmAngle*wedmHrc*wedmTclass;
+    wedm+=wedmShole*holeRates[wedmType][passIdx];
+    wedm+=wedmSshole*sholeRates[wedmType][0];
+  }
+
+  // 磨床
+  let grind=0;
+  const grindType=parseFloat(document.getElementById('grind-type').value)||0;
+  const grindPrec=parseFloat(document.getElementById('grind-prec').value)||1;
+  if(grindType>0){
+    document.querySelectorAll('#grind-faces .surface-row').forEach(r=>{
+      const area=parseFloat(r.querySelector('.grind-area').value)||0;
+      if(area>0){
+        const effArea=Math.max(area,10000);
+        grind+=effArea/10000*grindType*grindPrec;
+      }
+    });
+  }
+
+  // 孔加工
+  let holes=0;
+  document.querySelectorAll('#cnc-holes .hole-row').forEach(r=>{
+    const base=parseFloat(r.querySelector('.hole-type').value)||0;
+    const dia=parseFloat(r.querySelector('.hole-dia').value)||1;
+    const depth=parseFloat(r.querySelector('.hole-depth').value)||10;
+    const matK=parseFloat(r.querySelector('.hole-mat').value)||1;
+    const cnt=parseInt(r.querySelector('.hole-cnt').value)||0;
+    // 盲孔精孔不参与系数计算
+    let holeCost=0;
+    if(base>=10){holeCost=base*cnt;} // 盲孔精孔固定单价
+    else {
+      const depthK=Math.min(Math.ceil(depth/10),5);
+      const cntK=cnt<=50?1:cnt<=100?0.8:cnt<=150?0.6:0.5;
+      const coeff=(dia*matK*depthK*cntK).toFixed(2);
+      r.querySelector('.hole-coeff').value=coeff;
+      holeCost=base*dia*matK*depthK*cntK*cnt;
+    }
+    holes+=holeCost;
+  });
+
+  let surf=0;document.querySelectorAll('#cnc-surfs .surface-row').forEach(r=>{const v=r.querySelector('.cnc-stype').value.split('|');const q=parseFloat(r.querySelector('.cnc-sqty').value)||0;if(v[1]!=='n'){const unit=v[1];if(unit==='cm')surf+=parseFloat(v[0])*q;else surf+=parseFloat(v[0])*q;}});
+  const sub=(mat+proc+tool+wedm+grind+holes+surf+heat+pkg)*batchD;
+  const profit=sub*pr;const unit=sub+profit;
   const batch=qty<=5?'打样':qty<=50?'小批量':qty<=500?'中批量':'大批量';
-  const avgT=Array.from(document.querySelectorAll('.proc-row')).reduce((s,r)=>s+(parseFloat(r.querySelector('.cnc-time').value)||0),0);
-  const days=Math.ceil(avgT*qty/60/8)+(surf>0?5:2)+2;
+  const avgT=Array.from(document.querySelectorAll('#cnc-procs .proc-row')).reduce((s,r)=>s+(parseFloat(r.querySelector('.cnc-time').value)||0),0);
+  const days=Math.ceil(avgT*qty/60/8)+(surf>0?5:2)+(wedm>0?2:0)+(grind>0?1:0)+2;
   const total=unit*qty;
   const p=n=>(n/unit*100).toFixed(1);
+  const rows=[['📦 材料费',mat.toFixed(2),p(mat)],['⚙️ 加工费(CNC)',proc.toFixed(2),p(proc)],['🔧 刀具损耗',tool.toFixed(2),p(tool)]];
+  if(wedm>0)rows.push(['✂️ 线切割',wedm.toFixed(2),p(wedm)]);
+  if(grind>0)rows.push(['🫧 磨床加工',grind.toFixed(2),p(grind)]);
+  if(holes>0)rows.push(['🕳️ 孔加工',holes.toFixed(2),p(holes)]);
+  rows.push(['🎨 表面处理',surf.toFixed(2),p(surf)]);
+  if(heat>0)rows.push(['🔥 热处理',heat.toFixed(2),p(heat)]);
+  rows.push(['📦 包装运输',pkg.toFixed(2),p(pkg)]);
+  if(batchD<1)rows.push(['📉 批量折扣('+(batchD*100).toFixed(0)+'%)','—','—']);
+  rows.push(['💼 管理利润',profit.toFixed(2),p(profit)],['<b>合计</b>','<b>'+unit.toFixed(2)+'</b>','100']);
   show('cnc-r',resultHTML('CNC机加工成本估算',`订单${qty}件 · ${batch} · 预计${days}天交期`,
     [{v:'¥'+unit.toFixed(2),l:'单件成本'},{v:'¥'+total.toLocaleString(),l:`整批${qty}件`},{v:days+'天',l:'预计交期'},{v:batch,l:'批量级别'}],
-    [['📦 材料费',mat.toFixed(2),p(mat)],['⚙️ 加工费',proc.toFixed(2),p(proc)],['🔧 刀具损耗',tool.toFixed(2),p(tool)],['🎨 表面处理',surf.toFixed(2),p(surf)],['📦 包装运输',pkg.toFixed(2),p(pkg)],['💼 管理利润',profit.toFixed(2),p(profit)],['<b>合计</b>','<b>'+unit.toFixed(2)+'</b>','100']],
-    '价格受地区、供应商产能、材料行情波动影响，建议多家比价。'
+    rows,
+    '价格受地区、供应商产能、材料行情波动影响，建议多家比价。线切割/磨床/孔加工均已系数化计算。'
   ));
-  cncTips(mat,proc,surf,unit,qty);
+  cncTips(mat,proc+wedm+grind+holes,surf,unit,qty);
 }
 
 // ===== 注塑 =====
