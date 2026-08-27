@@ -1,7 +1,7 @@
 {
   "name": "成本核算",
   "short_name": "成本核算",
-  "description": "外发加工成本核算计算器 - CNC/注塑/钣金/SMT/压铸/线束/PCB七大工艺",
+  "description": "外发加工成本核算计算器 - CNC/注塑/钣金/SMT/压铸/线束/PCB/圆件车削/机架防护罩/报价比对十大模块（含BOM引擎基准价与供应商报价导入）",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "any",

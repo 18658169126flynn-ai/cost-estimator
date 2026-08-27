@@ -50,7 +50,7 @@ body { font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif; backgroun
 
 /* Tabs */
 .tabs-wrap { position:sticky; top:0; z-index:100; background:var(--bg); padding:20px 0 0; }
-.tabs { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; background:var(--surface); padding:6px; border-radius:var(--radius); box-shadow:var(--shadow-md); border:1px solid var(--border); }
+.tabs { display:grid; grid-template-columns:repeat(auto-fit,minmax(88px,1fr)); gap:6px; background:var(--surface); padding:6px; border-radius:var(--radius); box-shadow:var(--shadow-md); border:1px solid var(--border); }
 .tab { padding:14px 8px; text-align:center; cursor:pointer; border-radius:var(--radius-sm); transition:all 0.25s cubic-bezier(.4,0,.2,1); font-weight:600; font-size:13px; color:var(--text-secondary); position:relative; user-select:none; }
 .tab:hover { background:var(--surface-alt); color:var(--text); }
 .tab.active { background:var(--primary); color:#fff; box-shadow:0 2px 8px rgba(99,102,241,0.35); }
@@ -97,6 +97,30 @@ body { font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif; backgroun
 .proc-row { display:grid; grid-template-columns:1fr 120px 40px; gap:10px; align-items:end; margin-bottom:10px; padding:12px; background:var(--surface-alt); border-radius:var(--radius-sm); border:1px solid var(--border); }
 .proc-row .remove-row { width:36px; height:36px; border:none; background:#fee2e2; color:var(--danger); border-radius:8px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
 .proc-row .remove-row:hover { background:#fecaca; transform:scale(1.05); }
+
+/* 报价比对 rows */
+.cmp-import-bar { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px 12px; margin-bottom:12px; background:#f8fafc; border:1px dashed var(--border); border-radius:var(--radius-sm); }
+.cmp-import-hint { font-size:12px; font-weight:600; color:var(--primary-dark); }
+.cmp-import-note { width:100%; font-size:11px; color:var(--text-muted); }
+.import-btn { display:inline-flex; align-items:center; gap:5px; padding:7px 12px; background:var(--surface); border:1.5px solid var(--border); color:var(--text-secondary); border-radius:var(--radius-sm); cursor:pointer; font-size:12px; font-weight:600; font-family:inherit; transition:all 0.2s; }
+.import-btn:hover { border-color:var(--primary); color:var(--primary); background:#eef2ff; }
+.cmp-row { display:grid; grid-template-columns:1.4fr 0.7fr 1fr 1fr 36px; gap:10px; align-items:end; margin-bottom:12px; }
+.cmp-row .remove-row { width:36px; height:38px; border:none; background:#fee2e2; color:var(--danger); border-radius:8px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+.cmp-row .remove-row:hover { background:#fecaca; transform:scale(1.05); }
+.cmp-table { width:100%; border-collapse:collapse; }
+.cmp-table th { text-align:left; font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; padding:10px 12px; border-bottom:2px solid var(--border); }
+.cmp-table td { padding:10px 12px; font-size:13px; border-bottom:1px solid #f1f5f9; }
+.cmp-table tr.cmp-total td { border-bottom:none; font-weight:700; color:var(--primary-dark); background:#f8fafc; }
+.diff-up { color:var(--danger); font-weight:600; }
+.diff-down { color:var(--success); font-weight:600; }
+.diff-flat { color:var(--text-muted); }
+.tag { display:inline-block; padding:2px 8px; border-radius:100px; font-size:11px; font-weight:600; }
+.tag-red { background:#fee2e2; color:#b91c1c; }
+.tag-orange { background:#fef3c7; color:#b45309; }
+.tag-green { background:#d1fae5; color:#047857; }
+.tag-gray { background:#f1f5f9; color:#64748b; }
+.export-btn { display:inline-flex; align-items:center; gap:6px; padding:10px 18px; background:var(--surface); border:1.5px solid var(--border); color:var(--text-secondary); border-radius:var(--radius-sm); cursor:pointer; font-size:13px; font-weight:600; font-family:inherit; transition:all 0.2s; margin-top:10px; }
+.export-btn:hover { border-color:var(--primary); color:var(--primary); background:#eef2ff; }
 
 /* Surface items */
 .surface-row { display:grid; grid-template-columns:1fr 100px 50px 40px; gap:10px; align-items:end; margin-bottom:8px; padding:10px 12px; background:var(--surface-alt); border-radius:var(--radius-sm); border:1px solid var(--border); }
@@ -149,9 +173,10 @@ body { font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif; backgroun
   .tab { padding:10px 6px; }
   .form-grid.g2,.form-grid.g3,.form-grid.g4 { grid-template-columns:1fr; }
   .stats { grid-template-columns:repeat(2,1fr); }
+  .cmp-row { grid-template-columns:1fr 1fr; }
+  .cmp-row .remove-row { grid-column:1/3; width:100%; }
   .proc-row { grid-template-columns:1fr 100px 36px; }
   .surface-row { grid-template-columns:1fr 80px 40px 36px; }
-  .hole-row { grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr 36px !important; }
   .card { padding:18px; }
   .container { padding:0 12px; }
 }
@@ -193,6 +218,9 @@ body { font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif; backgroun
     <div class="tab" onclick="switchTab('dc',this)"><span class="tab-icon">🏭</span><span class="tab-label">压铸</span></div>
     <div class="tab" onclick="switchTab('wh',this)"><span class="tab-icon">🔗</span><span class="tab-label">线束加工</span></div>
     <div class="tab" onclick="switchTab('pcb',this)"><span class="tab-icon">📋</span><span class="tab-label">PCB制板</span></div>
+    <div class="tab" onclick="switchTab('round',this)"><span class="tab-icon">⚙️</span><span class="tab-label">圆件车削</span></div>
+    <div class="tab" onclick="switchTab('frame',this)"><span class="tab-icon">🏗️</span><span class="tab-label">机架防护罩</span></div>
+    <div class="tab" onclick="switchTab('cmp',this)"><span class="tab-icon">📊</span><span class="tab-label">报价比对</span></div>
   </div>
 </div>
 
@@ -203,13 +231,28 @@ body { font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif; backgroun
   <div class="card">
     <div class="card-header"><div class="card-icon blue">📦</div><div><div class="card-title">材料信息</div><div class="card-subtitle">选择材料类型并确认单价</div></div></div>
     <div class="form-grid g2">
-      <div class="field"><label>材料类型</label><select id="cnc-mat" onchange="cncMat()"><option value="">— 请选择 —</option><optgroup label="金属"><option value="6.5" data-n="45#钢">45#钢</option><option value="5" data-n="Q235">Q235冷轧板</option><option value="22" data-n="304SS">304不锈钢</option><option value="30" data-n="316SS">316不锈钢</option><option value="26" data-n="6061Al">6061铝合金</option><option value="42" data-n="7075Al">7075铝合金</option><option value="62" data-n="H62Cu">黄铜H62</option><option value="72" data-n="T2Cu">紫铜T2</option><option value="240" data-n="TC4Ti">钛合金TC4</option></optgroup><optgroup label="工程塑料"><option value="30" data-n="POM">POM赛钢</option><option value="100" data-n="PTFE">PTFE特氟龙</option><option value="280" data-n="PEI">PEI Ultem</option><option value="25" data-n="PA6">尼龙PA6</option><option value="700" data-n="PEEK">PEEK</option></optgroup></select></div>
-      <div class="field"><label>材料单价 (元/kg)</label><input type="number" id="cnc-price" step="0.1" placeholder="选择后自动填入"></div>
+      <div class="field"><label>材料类型</label><select id="cnc-mat" onchange="cncMat()"><option value="">— 请选择 —</option><optgroup label="金属（核价标准价）"><option value="7" data-n="S45C/45#钢" data-d="7.85">S45C 45#钢 ¥7/kg</option><option value="7" data-n="A3/Q235" data-d="7.85">A3钢 Q235 ¥7/kg</option><option value="17" data-n="Cr12" data-d="7.85">Cr12 ¥17/kg</option><option value="30" data-n="SKD11" data-d="7.93">SKD11 ¥30/kg</option><option value="30" data-n="SUS303" data-d="7.93">SUS303 ¥30/kg</option><option value="30" data-n="SUS304" data-d="7.93">SUS304 ¥30/kg</option><option value="27" data-n="6061-T6" data-d="2.75">6061-T6 铝 ¥27/kg</option><option value="42" data-n="7075Al" data-d="2.75">AL7075 铝 ¥42/kg</option><option value="65" data-n="H62Cu" data-d="8.9">黄铜 H62 ¥65/kg</option><option value="72" data-n="T2Cu" data-d="8.9">紫铜 T2 ¥72/kg</option><option value="240" data-n="TC4Ti" data-d="4.5">钛合金 TC4 ¥240/kg</option></optgroup><optgroup label="工程塑料"><option value="30" data-n="POM" data-d="1.42">国产POM ¥30/kg</option><option value="45" data-n="进口POM" data-d="1.42">进口POM ¥45/kg</option><option value="80" data-n="防静电POM" data-d="1.42">防静电POM ¥80/kg</option><option value="34" data-n="防静电电木" data-d="1.44">防静电电木 ¥34/kg</option><option value="100" data-n="PTFE" data-d="2.2">PTFE特氟龙 ¥100/kg</option><option value="280" data-n="PEI" data-d="1.27">PEI Ultem ¥280/kg</option><option value="25" data-n="PA6" data-d="1.14">尼龙PA6 ¥25/kg</option><option value="700" data-n="PEEK" data-d="1.32">PEEK ¥700/kg</option></optgroup></select></div>
+      <div class="field"><label>材料单价 (元/kg)</label><input type="number" id="cnc-price" step="0.1" placeholder="选择后自动填入"><input type="hidden" id="cnc-dens" value="7.85"></div>
     </div>
-    <div class="form-grid g3" style="margin-top:14px">
+    <div class="form-grid g4" style="margin-top:14px">
+      <div class="field"><label>核价模式</label><select id="cnc-mode"><option value="std" selected>标准核价（毛料公式）</option><option value="simple">简易估算（净重×利用率）</option></select><div class="hint">标准模式按《采购加工核价标准》</div></div>
       <div class="field"><label>零件净重 (g)</label><input type="number" id="cnc-wt" step="0.1" placeholder="200"></div>
       <div class="field"><label>材料利用率</label><select id="cnc-util"><option value="0.88">简单件 88%</option><option value="0.75" selected>中等件 75%</option><option value="0.60">复杂件 60%</option><option value="0.45">极复杂 45%</option></select></div>
       <div class="field"><label>订单数量 (件)</label><input type="number" id="cnc-qty" value="100" step="1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon cyan">📐</div><div><div class="card-title">毛料参数（标准核价模式）</div><div class="card-subtitle">毛料重量=(L+5)×(W+5)×(H+3)×密度/10⁶ kg</div></div></div>
+    <div class="form-grid g4">
+      <div class="field"><label>长度 L (mm)</label><input type="number" id="cnc-l" value="100" step="0.1"></div>
+      <div class="field"><label>宽度 W (mm)</label><input type="number" id="cnc-w" value="60" step="0.1"></div>
+      <div class="field"><label>高度 H (mm)</label><input type="number" id="cnc-h" value="20" step="0.1"></div>
+      <div class="field"><label>材料档位</label><select id="cnc-feed"><option value="0">毛料（不加）</option><option value="13">光料 +¥13/件</option><option value="15" selected>精料 +¥15/件</option></select></div>
+    </div>
+    <div class="form-grid g2" style="margin-top:14px">
+      <div class="field"><label>细长条件（宽厚<50mm 且 长≥300mm）</label><select id="cnc-slim"><option value="0">否</option><option value="50">是 +¥50/件</option></select></div>
+      <div class="field"><label>大件规则</label><div class="hint">毛料>10kg：每公斤附加 ¥1.5（自动）</div></div>
     </div>
   </div>
 
@@ -225,66 +268,37 @@ body { font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif; backgroun
     <button class="btn-add" onclick="addProc()">＋ 添加工序</button>
   </div>
 
-  <!-- 线切割加工 -->
   <div class="card">
-    <div class="card-header"><div class="card-icon cyan">✂️</div><div><div class="card-title">线切割加工（面积计价）</div><div class="card-subtitle">按切割面积×系数，比工时更精确</div></div></div>
-    <div class="form-grid g2">
-      <div class="field"><label>线割类型</label><select id="wedm-type" onchange="wedmType()"><option value="">不使用线切割</option><option value="slow" selected>慢走丝 ±0.005mm</option><option value="mid">中走丝 ±0.01mm</option><option value="fast">快走丝 ±0.02mm</option></select></div>
-      <div class="field"><label>切割模式</label><select id="wedm-pass"><option value="1">割一刀</option><option value="1.2">割一修一</option><option value="1.5">割一修二</option><option value="1.8">割一修三</option></select></div>
-    </div>
-    <div class="form-grid g2" style="margin-top:14px">
-      <div class="field"><label>切割长度 (mm)</label><input type="number" id="wedm-len" value="0" step="1"><div class="hint">外形轮廓总长度</div></div>
-      <div class="field"><label>截面厚度 (mm)</label><input type="number" id="wedm-thk" value="20" step="1"></div>
-    </div>
-    <div class="form-grid g4" style="margin-top:14px">
-      <div class="field"><label>线径</label><select id="wedm-wire"><option value="1" selected>Φ0.25</option><option value="1.5">Φ0.20</option><option value="2">Φ0.15</option><option value="3">Φ0.10</option></select></div>
-      <div class="field"><label>角度</label><select id="wedm-angle"><option value="1" selected>0°</option><option value="1.5">0°~15°</option><option value="2">>15°</option></select></div>
-      <div class="field"><label>材料硬度</label><select id="wedm-hrc"><option value="1" selected><80HRC</option><option value="2">>80HRC</option></select></div>
-      <div class="field"><label>厚度级别</label><select id="wedm-tclass"><option value="1" selected><80mm</option><option value="1.5">80~100mm</option><option value="2">>100mm</option></select></div>
-    </div>
-    <div class="form-grid g2" style="margin-top:14px">
-      <div class="field"><label>小孔数 (Φ<10mm, <20mm厚)</label><input type="number" id="wedm-shole" value="0" step="1"></div>
-      <div class="field"><label>侧割小孔数</label><input type="number" id="wedm-sshole" value="0" step="1"></div>
-    </div>
-    <div class="note-box" style="margin-top:12px"><span class="note-icon">📐</span><span class="note-text">费用 = 切割长度×截面厚度×基准单价×线径系数×角度系数×材料系数×厚度系数 + 小孔费用。小孔不足最低价按最低价计。</span></div>
-  </div>
-
-  <!-- 磨床加工 -->
-  <div class="card">
-    <div class="card-header"><div class="card-icon blue">🫧</div><div><div class="card-title">磨床加工（面积计价）</div><div class="card-subtitle">平面磨/大水磨/龙门磨，按磨削面积计算</div></div></div>
-    <div class="form-grid g2">
-      <div class="field"><label>磨床类型</label><select id="grind-type"><option value="0">不使用磨床</option><option value="2" selected>平面磨床 (350×150)</option><option value="2">大水磨 (600×1500)</option><option value="0.15">龙门磨 (2000×4000)</option></select></div>
-      <div class="field"><label>磨削精度</label><select id="grind-prec"><option value="1" selected>普通磨削</option><option value="1.5">精密磨削</option><option value="2">热处理材质磨削</option></select></div>
-    </div>
-    <div id="grind-faces">
-      <div class="surface-row"><div class="field"><label>磨削面面积 (mm²)</label><input type="number" class="grind-area" value="0" step="100"></div><div class="field"><label>单价(元/10000mm²)</label><input type="text" class="grind-price" value="2" readonly style="background:#f1f5f9"></div><div class="unit-label">面</div><button class="remove-row" onclick="rmRow(this)">×</button></div>
-    </div>
-    <button class="btn-add" onclick="addGrind()">＋ 添加磨削面</button>
-    <div class="hint" style="margin-top:8px">单个面不足10000mm²按10000mm²计算。龙门磨公式不同：费用=长×宽×2÷645×难度系数。</div>
-  </div>
-
-  <!-- 孔加工明细 -->
-  <div class="card">
-    <div class="card-header"><div class="card-icon green">🕳️</div><div><div class="card-title">孔加工明细（系数化计价）</div><div class="card-subtitle">过孔/沉头/攻牙/盲孔精孔，四级系数</div></div></div>
+    <div class="card-header"><div class="card-icon blue">🕳️</div><div><div class="card-title">孔类加工（系数法）</div><div class="card-subtitle">费用=基准单价×孔径系数×孔深系数×材料系数×数量系数</div></div></div>
     <div id="cnc-holes">
-      <div class="hole-row" style="display:grid;grid-template-columns:1fr 80px 70px 70px 70px 50px 40px;gap:8px;align-items:end;margin-bottom:10px;padding:10px 12px;background:var(--surface-alt);border-radius:var(--radius-sm);border:1px solid var(--border)">
-        <div class="field"><label>孔类型</label><select class="hole-type"><option value="1.5" selected>过孔 (¥1.5)</option><option value="2">沉头孔 (¥2)</option><option value="3">攻牙孔 (¥3)</option><option value="10">盲孔精孔≤Φ12深≤10</option><option value="15">盲孔精孔≤Φ12深>10</option><option value="20">盲孔精孔>Φ12深≤10</option><option value="25">盲孔精孔>Φ12深>10</option></select></div>
-        <div class="field"><label>Φ/M</label><select class="hole-dia"><option value="1" selected>≤Φ12/M12</option><option value="2">>Φ12/M12</option></select></div>
-        <div class="field"><label>孔深mm</label><input type="number" class="hole-depth" value="10" step="1"></div>
-        <div class="field"><label>材料</label><select class="hole-mat"><option value="1" selected><28HRC钢</option><option value="2">>28HRC钢</option><option value="0.8">铝/非金属</option></select></div>
-        <div class="field"><label>数量</label><input type="number" class="hole-cnt" value="10" step="1" onchange="holeCountChange(this)"></div>
-        <div class="field"><label>系数</label><input type="text" class="hole-coeff" value="1.0" readonly style="background:#f1f5f9;font-size:11px"></div>
-        <button class="remove-row" onclick="rmRow(this)">×</button>
-      </div>
+      <div class="surface-row"><div class="field"><label>孔类型</label><select class="hole-type"><option value="1.5">过孔 ¥1.5/pcs</option><option value="2">沉头孔 ¥2/pcs</option><option value="3">攻牙孔 ¥3/pcs</option></select></div><div class="field"><label>数量</label><input type="number" class="hole-qty" value="0" step="1" min="0"></div><div class="field"><label>孔径</label><select class="hole-dia"><option value="1">≤Ф12</option><option value="2">>Ф12</option></select></div><button class="remove-row" onclick="rmRow(this)" title="删除">×</button></div>
     </div>
+    <div class="form-grid g2" style="margin-top:8px">
+      <div class="field"><label>孔深系数</label><select id="cnc-hole-depth"><option value="1">≤10mm</option><option value="2">10-20mm</option><option value="3">20-30mm</option><option value="4">30-40mm</option><option value="5">40-50mm</option></select></div>
+      <div class="field"><label>材料系数</label><select id="cnc-hole-mat"><option value="1">硬度<28HRC</option><option value="2">硬度>28HRC</option><option value="0.8">铝及非金属</option></select></div>
+    </div>
+    <div class="hint" style="margin-top:6px">数量系数自动：≤50件=1.0 / 51-100=0.8 / 101-150=0.6 / >150=0.5</div>
     <button class="btn-add" onclick="addHole()">＋ 添加孔类型</button>
-    <div class="hint" style="margin-top:8px">孔类费用 = 基准单价 × 孔径系数 × 孔深系数 × 材料系数 × 数量系数 × 数量。盲孔精孔不参与系数计算，按固定单价。</div>
   </div>
 
   <div class="card">
-    <div class="card-header"><div class="card-icon orange">🎨</div><div><div class="card-title">表面处理</div><div class="card-subtitle">可选，可添加多项（价格已按PPT标准更新）</div></div></div>
+    <div class="card-header"><div class="card-icon green">✂️</div><div><div class="card-title">线切割（面积法）</div><div class="card-subtitle">费用=切割长度×截面厚度×基准单价×系数</div></div></div>
+    <div id="cnc-wires">
+      <div class="surface-row"><div class="field"><label>走丝类型</label><select class="wc-type"><option value="0.018">慢走丝 ¥0.018/mm²</option><option value="0.008">中走丝 ¥0.008/mm²</option><option value="0.005">快走丝 ¥0.005/mm²</option></select></div><div class="field"><label>切割长度(mm)</label><input type="number" class="wc-len" value="0" step="1" min="0"></div><div class="field"><label>截面厚度(mm)</label><input type="number" class="wc-thk" value="0" step="0.1" min="0"></div><button class="remove-row" onclick="rmRow(this)" title="删除">×</button></div>
+    </div>
+    <div class="form-grid g3" style="margin-top:8px">
+      <div class="field"><label>修刀次数</label><select id="wc-pass"><option value="1">割一刀</option><option value="1.11">割一修一 ×1.11</option><option value="1.39">割一修二 ×1.39</option><option value="1.67">割一修三 ×1.67</option></select></div>
+      <div class="field"><label>线径系数</label><select id="wc-dia"><option value="1">Φ0.25</option><option value="1.5">Φ0.2</option><option value="2">Φ0.15</option></select></div>
+      <div class="field"><label>角度/材料/厚度</label><select id="wc-other"><option value="1">常规（0°/<80HRC/<80mm）</option><option value="1.5">斜面≤15° 或 80-100mm</option><option value="2">斜面>15° 或 硬度>80 或 >100mm</option></select></div>
+    </div>
+    <div class="hint" style="margin-top:6px">修刀系数为基准价折算：慢丝 0.018/0.020/0.025/0.03；中丝 0.008/0.010/0.013；快丝 0.005</div>
+    <button class="btn-add" onclick="addWire()">＋ 添加线切割项</button>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon orange">🎨</div><div><div class="card-title">表面处理</div><div class="card-subtitle">可选，可添加多项</div></div></div>
     <div id="cnc-surfs">
-      <div class="surface-row"><div class="field"><label>处理方式</label><select class="cnc-stype"><option value="0|n">无</option><optgroup label="钢件镀层"><option value="5|kg">镀镍 ¥5/kg</option><option value="3|kg">镀铬 ¥3/kg</option><option value="3|kg">发黑 ¥3/kg</option><option value="50|h">抛光 ¥50/h</option><option value="25|kg">QPQ ¥25/kg</option></optgroup><optgroup label="铝件阳极"><option value="8|kg">本色氧化 ¥8/kg</option><option value="18|kg">喷砂亮银 ¥18/kg</option><option value="19|kg">硬质氧化 ¥19/kg</option><option value="16|kg">黑色氧化 ¥16/kg</option><option value="30|kg">黑色硬质氧化 ¥30/kg</option><option value="8|kg">喷砂本色 ¥8/kg</option><option value="23|kg">喷砂硬质氧化 ¥23/kg</option><option value="23|kg">其他彩色 ¥23/kg</option></optgroup><optgroup label="镀钛"><option value="4|cm">TIN ¥4/cm²</option><option value="5|cm">AC ¥5/cm²</option><option value="6|cm">DLC ¥6/cm²</option></optgroup><optgroup label="其他"><option value="50|m2">喷漆 ¥50/m²</option><option value="30|m2">喷粉 ¥30/m²</option><option value="20|m2">电泳 ¥20/m²</option><option value="2|kg">喷砂 ¥2/kg</option><option value="1|pcs">激光刻字 ¥1/件</option></optgroup></select></div><div class="field"><label>数量</label><input type="number" class="cnc-sqty" value="0" step="0.1"></div><div class="unit-label">kg/m²/cm/h</div><button class="remove-row" onclick="rmRow(this)" title="删除">×</button></div>
+      <div class="surface-row"><div class="field"><label>处理方式</label><select class="cnc-stype"><option value="0|n">无</option><optgroup label="铝阳极氧化（元/kg）"><option value="8|kg">本色氧化 ¥8/kg</option><option value="18|kg">喷砂亮银 ¥18/kg</option><option value="19|kg">硬质氧化 ¥19/kg</option><option value="16|kg">黑色氧化 ¥16/kg</option><option value="30|kg">黑色硬质氧化 ¥30/kg</option><option value="23|kg">喷砂硬质 ¥23/kg</option><option value="20|kg">喷砂黑色 ¥20/kg</option><option value="34|kg">喷砂黑色硬质 ¥34/kg</option><option value="23|kg">彩色氧化 ¥23/kg</option></optgroup><optgroup label="钢件镀层（元/kg）"><option value="5|kg">镀镍 ¥5/kg</option><option value="3|kg">镀铬 ¥3/kg</option><option value="3|kg">发黑 ¥3/kg</option><option value="25|kg">QPQ ¥25/kg</option></optgroup><optgroup label="喷涂/其他"><option value="60|m2">静电喷粉/喷漆 ¥60/m²</option><option value="8|kg">铁氟龙(国产) ¥8/kg</option><option value="16|kg">铁氟龙(进口) ¥16/kg</option><option value="2|kg">喷砂 ¥2/kg</option></optgroup></select></div><div class="field"><label>数量</label><input type="number" class="cnc-sqty" value="0" step="0.1"></div><div class="unit-label">kg/m²</div><button class="remove-row" onclick="rmRow(this)" title="删除">×</button></div>
     </div>
     <button class="btn-add" onclick="addSurf('cnc')">＋ 添加处理</button>
   </div>
@@ -295,10 +309,6 @@ body { font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif; backgroun
       <div class="field"><label>管理利润率</label><select id="cnc-profit"><option value="0.15">15%</option><option value="0.20" selected>20%</option><option value="0.25">25%</option><option value="0.30">30%</option></select></div>
       <div class="field"><label>刀具损耗费 (元)</label><input type="number" id="cnc-tool" value="0" step="1"><div class="hint">0 = 自动估算(加工费12%)</div></div>
       <div class="field"><label>包装运输 (元/件)</label><input type="number" id="cnc-pkg" value="2" step="0.5"></div>
-    </div>
-    <div class="form-grid g2" style="margin-top:14px">
-      <div class="field"><label>批量折扣</label><select id="cnc-batch"><option value="1" selected>1-5件 (无折扣)</option><option value="0.95">6-10件 (95折)</option><option value="0.9">11-30件 (9折)</option><option value="0.85">31-50件 (85折)</option><option value="0.8">51-100件 (8折)</option><option value="0.7">100件+ (7折)</option></select></div>
-      <div class="field"><label>热处理 (元)</label><input type="number" id="cnc-heat" value="0" step="1"><div class="hint">真空8元/kg 调制4元/kg 深冷16元/kg</div></div>
     </div>
   </div>
 
@@ -593,6 +603,127 @@ body { font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif; backgroun
   <div class="result-card" id="pcb-r"></div>
   <div class="tips-card" id="pcb-tips"></div>
 </div>
+
+<!-- ======================== 圆件车削 ======================== -->
+<div class="panel" id="p-round">
+  <div class="card">
+    <div class="card-header"><div class="card-icon blue">⚙️</div><div><div class="card-title">材料信息</div><div class="card-subtitle">圆件毛坯=π×(R+2.5)²×(L+5)×密度/10⁶ kg</div></div></div>
+    <div class="form-grid g2">
+      <div class="field"><label>材料类型</label><select id="rn-mat" onchange="rnMat()"><option value="">— 请选择 —</option><optgroup label="金属（核价标准价）"><option value="7" data-n="S45C/45#钢" data-d="7.85">S45C 45#钢 ¥7/kg</option><option value="7" data-n="A3/Q235" data-d="7.85">A3钢 Q235 ¥7/kg</option><option value="23" data-n="Cr12" data-d="7.85">Cr12 ¥23/kg</option><option value="30" data-n="SKD11" data-d="7.93">SKD11 ¥30/kg</option><option value="25" data-n="SUS303/304" data-d="7.93">SUS303/304 ¥25/kg</option><option value="23" data-n="6061-T6" data-d="2.75">6061-T6 铝 ¥23/kg</option><option value="45" data-n="7075Al" data-d="2.75">AL7075 铝 ¥45/kg</option><option value="72" data-n="Cu铜" data-d="8.9">铜 Cu ¥72/kg</option></optgroup><optgroup label="工程塑料"><option value="30" data-n="POM" data-d="1.42">国产POM ¥30/kg</option><option value="45" data-n="进口POM" data-d="1.42">进口POM ¥45/kg</option><option value="80" data-n="防静电POM" data-d="1.42">防静电POM ¥80/kg</option><option value="34" data-n="防静电电木" data-d="1.44">防静电电木 ¥34/kg</option></optgroup></select></div>
+      <div class="field"><label>材料单价 (元/kg)</label><input type="number" id="rn-price" step="0.1" placeholder="选择后自动填入"><input type="hidden" id="rn-dens" value="7.85"></div>
+    </div>
+    <div class="form-grid g3" style="margin-top:14px">
+      <div class="field"><label>最大外径 D (mm)</label><input type="number" id="rn-d" value="20" step="0.1"></div>
+      <div class="field"><label>车削长度 L (mm)</label><input type="number" id="rn-l" value="30" step="0.1"></div>
+      <div class="field"><label>订单数量 (件)</label><input type="number" id="rn-qty" value="100" step="1"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon green">⚙️</div><div><div class="card-title">车削工序</div><div class="card-subtitle">工时×工时单价（车床50/数控车70/仪表车35/走心机100/车铣复合150）</div></div></div>
+    <div id="rn-procs">
+      <div class="proc-row">
+        <div class="field"><label>设备</label><select class="rn-dev"><option value="50">车床 ¥50/h</option><option value="70" selected>数控车 ¥70/h</option><option value="35">仪表车 ¥35/h</option><option value="100">走心机 ¥100/h</option><option value="150">车铣复合 ¥150/h</option><option value="80">外圆磨 ¥80/h</option><option value="70">无心磨 ¥70/h</option><option value="70">冲子磨 ¥70/h</option></select></div>
+        <div class="field"><label>工时 (min)</label><input type="number" class="rn-time" value="20" step="1"></div>
+        <button class="remove-row" onclick="rmRow(this)" title="删除">×</button>
+      </div>
+    </div>
+    <button class="btn-add" onclick="addRproc()">＋ 添加工序</button>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon orange">🎨</div><div><div class="card-title">表面处理</div><div class="card-subtitle">可选，可添加多项</div></div></div>
+    <div id="rn-surfs">
+      <div class="surface-row"><div class="field"><label>处理方式</label><select class="rn-stype"><option value="0|n">无</option><optgroup label="铝阳极氧化（元/kg）"><option value="8|kg">本色氧化 ¥8/kg</option><option value="18|kg">喷砂亮银 ¥18/kg</option><option value="19|kg">硬质氧化 ¥19/kg</option><option value="16|kg">黑色氧化 ¥16/kg</option><option value="30|kg">黑色硬质氧化 ¥30/kg</option><option value="23|kg">喷砂硬质 ¥23/kg</option><option value="20|kg">喷砂黑色 ¥20/kg</option><option value="34|kg">喷砂黑色硬质 ¥34/kg</option><option value="23|kg">彩色氧化 ¥23/kg</option></optgroup><optgroup label="钢件镀层（元/kg）"><option value="5|kg">镀镍 ¥5/kg</option><option value="3|kg">镀铬 ¥3/kg</option><option value="3|kg">发黑 ¥3/kg</option><option value="25|kg">QPQ ¥25/kg</option></optgroup><optgroup label="喷涂/其他"><option value="60|m2">静电喷粉/喷漆 ¥60/m²</option><option value="8|kg">铁氟龙(国产) ¥8/kg</option><option value="16|kg">铁氟龙(进口) ¥16/kg</option><option value="2|kg">喷砂 ¥2/kg</option></optgroup></select></div><div class="field"><label>数量</label><input type="number" class="rn-sqty" value="0" step="0.1"></div><div class="unit-label">kg/m²</div><button class="remove-row" onclick="rmRow(this)" title="删除">×</button></div>
+    </div>
+    <button class="btn-add" onclick="addSurf('rn')">＋ 添加处理</button>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">📐</div><div><div class="card-title">其他参数</div></div></div>
+    <div class="form-grid g3">
+      <div class="field"><label>管理利润率</label><select id="rn-profit"><option value="0.15">15%</option><option value="0.20" selected>20%</option><option value="0.25">25%</option></select></div>
+      <div class="field"><label>刀具损耗 (元)</label><input type="number" id="rn-tool" value="0" step="1"><div class="hint">0=自动(加工费12%)</div></div>
+      <div class="field"><label>包装运输 (元/件)</label><input type="number" id="rn-pkg" value="1" step="0.5"></div>
+    </div>
+  </div>
+  <button class="btn-calc" onclick="calcRound()">📊 计算圆件成本</button>
+  <div class="result-card" id="rn-r"></div>
+  <div class="tips-card" id="rn-tips"></div>
+</div>
+
+<!-- ======================== 机架/防护罩 ======================== -->
+<div class="panel" id="p-frame">
+  <div class="card">
+    <div class="card-header"><div class="card-icon blue">🏗️</div><div><div class="card-title">计价方法</div><div class="card-subtitle">型材明细法（推荐）或 重量系数法（机架一口价）</div></div></div>
+    <div class="form-grid g3">
+      <div class="field"><label>计价方法</label><select id="fr-method" onchange="frMethod()"><option value="profile" selected>型材明细法</option><option value="weight">重量系数法（重量×系数）</option></select></div>
+      <div class="field" id="fr-w1" style="display:none"><label>机架重量 (kg)</label><input type="number" id="fr-weight" value="50" step="0.5"></div>
+      <div class="field" id="fr-w2" style="display:none"><label>复杂度系数</label><select id="fr-coeff"><option value="20">简单件（仅焊接）20</option><option value="25" selected>带加工（上下两面CNC）25</option><option value="28">多面复杂（>2面CNC）28</option></select></div>
+    </div>
+  </div>
+  <div class="card" id="fr-profile-card">
+    <div class="card-header"><div class="card-icon green">🧱</div><div><div class="card-title">铝型材用量（XNP系列，未税）</div><div class="card-subtitle">费用=L(米)×单价/米×1.05（含5%损耗），切割免加工费</div></div></div>
+    <div id="fr-profiles">
+      <div class="surface-row"><div class="field"><label>型材规格</label><select class="fr-ptype"><option value="13">XNP-6-2020 ¥13.00/米</option><option value="22.33">XNP-6-2040 ¥22.33/米</option><option value="24.33">XNP-8-3030 ¥24.33/米</option><option value="43.67">XNP-8-3060 ¥43.67/米</option><option value="35.5">XNP-8-4040L ¥35.50/米</option><option value="43.67">XNP-8-4040B ¥43.67/米</option><option value="80.5">XNP-8-4080 ¥80.50/米</option><option value="47.67">XNP-10-4545L ¥47.67/米</option><option value="68">XNP-10-5050 ¥68.00/米</option><option value="111.33">XNP-10-50100 ¥111.33/米</option><option value="69">XNP-8-6060L ¥69.00/米</option><option value="132.17">XNP-8-8080 ¥132.17/米</option><option value="280.5">XNP-10-100100 ¥280.50/米</option></select></div><div class="field"><label>用量 (米)</label><input type="number" class="fr-pm" value="0" step="0.1" min="0"></div><button class="remove-row" onclick="rmRow(this)" title="删除">×</button></div>
+    </div>
+    <button class="btn-add" onclick="addFrProfile()">＋ 添加型材</button>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon cyan">🔩</div><div><div class="card-title">配件</div><div class="card-subtitle">按市场价，安装不收其他费用</div></div></div>
+    <div id="fr-parts">
+      <div class="surface-row"><div class="field"><label>配件</label><select class="fr-part"><option value="0.2">M6*15内六角螺钉 ¥0.2</option><option value="0.5">螺母 ¥0.5</option><option value="0.5">T型螺母 ¥0.5</option><option value="2">水晶头 ¥2</option><option value="2">压条/封条 ¥2/米</option><option value="3">端盖 ¥3</option><option value="2">角铝 ¥2</option><option value="10">门吸/球型扣 ¥10</option><option value="12">把手 ¥12</option><option value="40">脚轮 ¥40</option><option value="35">脚杯 ¥35</option></select></div><div class="field"><label>数量</label><input type="number" class="fr-pq" value="0" step="1" min="0"></div><button class="remove-row" onclick="rmRow(this)" title="删除">×</button></div>
+    </div>
+    <button class="btn-add" onclick="addFrPart()">＋ 添加配件</button>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon orange">🎨</div><div><div class="card-title">板材/PC/表面处理</div></div></div>
+    <div class="form-grid g3">
+      <div class="field"><label>PC/亚克力板材费 (元)</label><input type="number" id="fr-pc" value="0" step="1"><div class="hint">亚克力3mm 195元/张</div></div>
+      <div class="field"><label>喷涂面积 (m²)</label><input type="number" id="fr-paint" value="0" step="0.1"><div class="hint">静电喷粉 ¥60/m²</div></div>
+      <div class="field"><label>订单数量 (套)</label><input type="number" id="fr-qty" value="1" step="1"></div>
+    </div>
+    <div class="form-grid g2" style="margin-top:14px">
+      <div class="field"><label>管理利润率</label><select id="fr-profit"><option value="0.10">10%</option><option value="0.15" selected>15%</option><option value="0.20">20%</option></select></div>
+      <div class="field"><label>包装运输 (元/套)</label><input type="number" id="fr-pkg" value="20" step="5"></div>
+    </div>
+  </div>
+  <button class="btn-calc" onclick="calcFrame()">📊 计算机架/防护罩成本</button>
+  <div class="result-card" id="fr-r"></div>
+  <div class="tips-card" id="fr-tips"></div>
+</div>
+
+<!-- ======================== 报价比对 ======================== -->
+<div class="panel" id="p-cmp">
+  <div class="card">
+    <div class="card-header"><div class="card-icon blue">📊</div><div><div class="card-title">报价比对单</div><div class="card-subtitle">内部基准价（核价器标准价 / 历史成交价） vs 供应商报价，逐项找出差异与谈判空间</div></div></div>
+    <div class="form-grid g4">
+      <div class="field"><label>供应商名称</label><input type="text" id="cmp-supplier" placeholder="例：XX机械加工厂"></div>
+      <div class="field"><label>物料/产品名称</label><input type="text" id="cmp-part" placeholder="例：铝合金外壳"></div>
+      <div class="field"><label>订单数量</label><input type="number" id="cmp-qty" value="100" step="1" min="1"></div>
+      <div class="field"><label>报价口径</label><select id="cmp-tax"><option value="含税">含税</option><option value="未税">未税</option></select></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon green">📋</div><div><div class="card-title">逐项明细</div><div class="card-subtitle">一行一个项目/工序；数量支持多件计，基准价与报价价可只填一项</div></div></div>
+    <div class="cmp-import-bar">
+      <span class="cmp-import-hint">⚡ 快速导入：</span>
+      <button class="import-btn" onclick="importBomJson()">📥 导入BOM引擎基准价 (JSON)</button>
+      <button class="import-btn" onclick="importCmpCSV()">📤 导入供应商报价 (CSV)</button>
+      <span class="cmp-import-note">先导入引擎估算价作基准，再导入供应商报价自动匹配</span>
+    </div>
+    <div id="cmp-rows">
+      <div class="cmp-row">
+        <div class="field"><label>项目/工序</label><select class="cmp-cat"><option value="cnc">CNC机加工</option><option value="inj">注塑加工</option><option value="sheet">钣金加工</option><option value="smt">SMT贴片</option><option value="dc">压铸</option><option value="wh">线束加工</option><option value="pcb">PCB制板</option><option value="round">圆件车削</option><option value="frame">机架防护罩</option><option value="surf">表面处理</option><option value="mold">模具/治具</option><option value="pkg">包装运输</option><option value="other">其他</option></select></div>
+        <div class="field"><label>数量</label><input type="number" class="cmp-qty" value="1" step="1" min="1"></div>
+        <div class="field"><label>基准单价 (¥)</label><input type="number" class="cmp-base" value="0" step="0.01" min="0"></div>
+        <div class="field"><label>报价单价 (¥)</label><input type="number" class="cmp-quote" value="0" step="0.01" min="0"></div>
+        <button class="remove-row" onclick="rmCmpRow(this)" title="删除">×</button>
+      </div>
+    </div>
+    <button class="btn-add" onclick="cmpAddRow()">＋ 添加比对项</button>
+  </div>
+  <button class="btn-calc" onclick="calcCompare()">📊 生成比对结果</button>
+  <div class="result-card" id="cmp-r"></div>
+  <div class="tips-card" id="cmp-tips"></div>
+</div>
 </div><!-- container -->
 
 <div class="footer">⚠️ 估算仅供参考，实际以供应商报价为准 · 数据基于2024-2025年市场行情</div>
@@ -604,16 +735,14 @@ function switchTab(id,el){
   el.classList.add('active');
   document.getElementById('p-'+id).classList.add('active');
 }
-function rmRow(b){const r=b.closest('.proc-row,.surface-row,.hole-row');if(r.parentElement.children.length>1)r.remove();}
-function addProc(){const h=document.querySelector('#cnc-procs .proc-row').outerHTML;const d=document.createElement('div');d.innerHTML=h;const r=d.firstElementChild;r.querySelector('.cnc-time').value=20;document.getElementById('cnc-procs').appendChild(r);}
-function addSurf(prefix){let src,cont;if(prefix==='cnc'){src=document.querySelector('#cnc-surfs .surface-row');cont=document.getElementById('cnc-surfs');}else if(prefix==='inj'){src=document.querySelector('#inj-posts .surface-row');cont=document.getElementById('inj-posts');}else if(prefix==='dc'){src=document.querySelector('#dc-surfs .surface-row');cont=document.getElementById('dc-surfs');}else{src=document.querySelector('#sh-surfs .surface-row');cont=document.getElementById('sh-surfs');}const r=src.cloneNode(true);r.querySelectorAll('input').forEach(i=>i.value=0);cont.appendChild(r);}
+function rmRow(b){const r=b.closest('.proc-row,.surface-row');if(r.parentElement.children.length>1)r.remove();}
+function addProc(){const h=document.querySelector('.proc-row').outerHTML;const d=document.createElement('div');d.innerHTML=h;const r=d.firstElementChild;r.querySelector('.cnc-time').value=20;document.getElementById('cnc-procs').appendChild(r);}
+function addSurf(prefix){let src,cont;if(prefix==='cnc'){src=document.querySelector('#cnc-surfs .surface-row');cont=document.getElementById('cnc-surfs');}else if(prefix==='inj'){src=document.querySelector('#inj-posts .surface-row');cont=document.getElementById('inj-posts');}else if(prefix==='dc'){src=document.querySelector('#dc-surfs .surface-row');cont=document.getElementById('dc-surfs');}else if(prefix==='rn'){src=document.querySelector('#rn-surfs .surface-row');cont=document.getElementById('rn-surfs');}else{src=document.querySelector('#sh-surfs .surface-row');cont=document.getElementById('sh-surfs');}const r=src.cloneNode(true);r.querySelectorAll('input').forEach(i=>i.value=0);cont.appendChild(r);}
 function addWh(){const r=document.querySelector('#wh-wires .surface-row').cloneNode(true);document.getElementById('wh-wires').appendChild(r);}
-// New helpers
-function addGrind(){const r=document.querySelector('#grind-faces .surface-row').cloneNode(true);r.querySelector('.grind-area').value=0;document.getElementById('grind-faces').appendChild(r);}
-function addHole(){const r=document.querySelector('#cnc-holes .hole-row').cloneNode(true);r.querySelector('.hole-cnt').value=10;r.querySelector('.hole-coeff').value='1.0';document.getElementById('cnc-holes').appendChild(r);}
-function holeCountChange(el){const r=el.closest('.hole-row');const base=parseFloat(r.querySelector('.hole-type').value)||0;const dia=parseFloat(r.querySelector('.hole-dia').value)||1;const depth=parseFloat(r.querySelector('.hole-depth').value)||10;const matK=parseFloat(r.querySelector('.hole-mat').value)||1;const cnt=parseInt(r.querySelector('.hole-cnt').value)||0;if(base>=10){r.querySelector('.hole-coeff').value='固定';return;}const depthK=Math.min(Math.ceil(depth/10),5);const cntK=cnt<=50?1:cnt<=100?0.8:cnt<=150?0.6:0.5;r.querySelector('.hole-coeff').value=(dia*matK*depthK*cntK).toFixed(2);}
-function wedmType(){const t=document.getElementById('wedm-type').value;if(!t||t==='0'){document.getElementById('wedm-len').value=0;return;}}
-function cncMat(){const s=document.getElementById('cnc-mat');if(s.value)document.getElementById('cnc-price').value=s.value;}
+function cncMat(){const s=document.getElementById('cnc-mat');if(s.value){document.getElementById('cnc-price').value=s.value;const d=s.selectedOptions[0].dataset.d;if(d)document.getElementById('cnc-dens').value=d;}}
+function addHole(){const r=document.querySelector('#cnc-holes .surface-row').cloneNode(true);r.querySelector('.hole-qty').value=0;document.getElementById('cnc-holes').appendChild(r);}
+function addWire(){const r=document.querySelector('#cnc-wires .surface-row').cloneNode(true);document.getElementById('cnc-wires').appendChild(r);}
+function batchCoeff(q){return q<=5?1:q<=10?0.95:q<=30?0.9:q<=50?0.85:q<=100?0.8:0.7;}
 function injMat(){const s=document.getElementById('inj-mat');if(s.value)document.getElementById('inj-price').value=s.value;}
 function shMat(){const s=document.getElementById('sh-mat');if(s.value)document.getElementById('sh-price').value=s.value;}
 function dcMat(){const s=document.getElementById('dc-mat');if(s.value){const v=s.value.split('|');document.getElementById('dc-price').value=v[0];document.getElementById('dc-density').value=v[1];}}
@@ -704,97 +833,64 @@ function pcbTips(unit,qty,layers){
 // ===== CNC =====
 function calcCnc(){
   const mp=parseFloat(document.getElementById('cnc-price').value)||0;
+  const dens=parseFloat(document.getElementById('cnc-dens').value)||7.85;
   const wt=parseFloat(document.getElementById('cnc-wt').value)||0;
   const ut=parseFloat(document.getElementById('cnc-util').value)||0.75;
   const qty=parseInt(document.getElementById('cnc-qty').value)||1;
   const pr=parseFloat(document.getElementById('cnc-profit').value)||0.2;
   const pkg=parseFloat(document.getElementById('cnc-pkg').value)||0;
-  const batchD=parseFloat(document.getElementById('cnc-batch').value)||1;
-  const heat=parseFloat(document.getElementById('cnc-heat').value)||0;
-  const mat=wt/1000/ut*mp;
-  let proc=0;document.querySelectorAll('#cnc-procs .proc-row').forEach(r=>{const rate=parseFloat(r.querySelector('.cnc-dev').value)||0;const t=parseFloat(r.querySelector('.cnc-time').value)||0;proc+=rate*t/60;});
-  let tool=parseFloat(document.getElementById('cnc-tool').value)||0;if(!tool)tool=proc*0.12;
-
-  // 线切割
-  let wedm=0;
-  const wedmType=document.getElementById('wedm-type').value;
-  if(wedmType&&wedmType!=='0'){
-    const wedmLen=parseFloat(document.getElementById('wedm-len').value)||0;
-    const wedmThk=parseFloat(document.getElementById('wedm-thk').value)||0;
-    const wedmPass=parseFloat(document.getElementById('wedm-pass').value)||1;
-    const wedmWire=parseFloat(document.getElementById('wedm-wire').value)||1;
-    const wedmAngle=parseFloat(document.getElementById('wedm-angle').value)||1;
-    const wedmHrc=parseFloat(document.getElementById('wedm-hrc').value)||1;
-    const wedmTclass=parseFloat(document.getElementById('wedm-tclass').value)||1;
-    const wedmShole=parseInt(document.getElementById('wedm-shole').value)||0;
-    const wedmSshole=parseInt(document.getElementById('wedm-sshole').value)||0;
-    const baseRates={slow:0.018,mid:0.008,fast:0.005};
-    const holeRates={slow:[9,12,15],mid:[6,8,9],fast:[6,6,6]};
-    const sholeRates={slow:[35,'—'],mid:[15,'—'],fast:[15,'—']};
-    const passIdx=Math.min(parseInt(document.getElementById('wedm-pass').value)-1,2);
-    wedm=wedmLen*wedmThk*baseRates[wedmType]*wedmPass*wedmWire*wedmAngle*wedmHrc*wedmTclass;
-    wedm+=wedmShole*holeRates[wedmType][passIdx];
-    wedm+=wedmSshole*sholeRates[wedmType][0];
+  const mode=document.getElementById('cnc-mode').value;
+  let mat=0,feed=0;
+  if(mode==='std'){
+    const L=parseFloat(document.getElementById('cnc-l').value)||0;
+    const W=parseFloat(document.getElementById('cnc-w').value)||0;
+    const H=parseFloat(document.getElementById('cnc-h').value)||0;
+    const blank=((L+5)*(W+5)*(H+3)*dens/1e6);
+    mat=blank*mp;
+    const fd=parseFloat(document.getElementById('cnc-feed').value)||0;
+    const slim=parseFloat(document.getElementById('cnc-slim').value)||0;
+    feed=(blank<=10?fd:blank*1.5)+slim;
+  }else{
+    mat=wt/1000/ut*mp;
   }
-
-  // 磨床
-  let grind=0;
-  const grindType=parseFloat(document.getElementById('grind-type').value)||0;
-  const grindPrec=parseFloat(document.getElementById('grind-prec').value)||1;
-  if(grindType>0){
-    document.querySelectorAll('#grind-faces .surface-row').forEach(r=>{
-      const area=parseFloat(r.querySelector('.grind-area').value)||0;
-      if(area>0){
-        const effArea=Math.max(area,10000);
-        grind+=effArea/10000*grindType*grindPrec;
-      }
-    });
-  }
-
-  // 孔加工
-  let holes=0;
-  document.querySelectorAll('#cnc-holes .hole-row').forEach(r=>{
+  let proc=0;document.querySelectorAll('.proc-row').forEach(r=>{const rate=parseFloat(r.querySelector('.cnc-dev').value)||0;const t=parseFloat(r.querySelector('.cnc-time').value)||0;proc+=rate*t/60;});
+  let holes=0;document.querySelectorAll('#cnc-holes .surface-row').forEach(r=>{
     const base=parseFloat(r.querySelector('.hole-type').value)||0;
+    const n=parseFloat(r.querySelector('.hole-qty').value)||0;
     const dia=parseFloat(r.querySelector('.hole-dia').value)||1;
-    const depth=parseFloat(r.querySelector('.hole-depth').value)||10;
-    const matK=parseFloat(r.querySelector('.hole-mat').value)||1;
-    const cnt=parseInt(r.querySelector('.hole-cnt').value)||0;
-    // 盲孔精孔不参与系数计算
-    let holeCost=0;
-    if(base>=10){holeCost=base*cnt;} // 盲孔精孔固定单价
-    else {
-      const depthK=Math.min(Math.ceil(depth/10),5);
-      const cntK=cnt<=50?1:cnt<=100?0.8:cnt<=150?0.6:0.5;
-      const coeff=(dia*matK*depthK*cntK).toFixed(2);
-      r.querySelector('.hole-coeff').value=coeff;
-      holeCost=base*dia*matK*depthK*cntK*cnt;
-    }
-    holes+=holeCost;
+    const depth=parseFloat(document.getElementById('cnc-hole-depth').value)||1;
+    const matc=parseFloat(document.getElementById('cnc-hole-mat').value)||1;
+    const qf=n<=50?1:n<=100?0.8:n<=150?0.6:0.5;
+    holes+=base*dia*depth*matc*qf*n;
   });
-
-  let surf=0;document.querySelectorAll('#cnc-surfs .surface-row').forEach(r=>{const v=r.querySelector('.cnc-stype').value.split('|');const q=parseFloat(r.querySelector('.cnc-sqty').value)||0;if(v[1]!=='n'){const unit=v[1];if(unit==='cm')surf+=parseFloat(v[0])*q;else surf+=parseFloat(v[0])*q;}});
-  const sub=(mat+proc+tool+wedm+grind+holes+surf+heat+pkg)*batchD;
-  const profit=sub*pr;const unit=sub+profit;
-  const batch=qty<=5?'打样':qty<=50?'小批量':qty<=500?'中批量':'大批量';
-  const avgT=Array.from(document.querySelectorAll('#cnc-procs .proc-row')).reduce((s,r)=>s+(parseFloat(r.querySelector('.cnc-time').value)||0),0);
-  const days=Math.ceil(avgT*qty/60/8)+(surf>0?5:2)+(wedm>0?2:0)+(grind>0?1:0)+2;
+  let wire=0;document.querySelectorAll('#cnc-wires .surface-row').forEach(r=>{
+    const base=parseFloat(r.querySelector('.wc-type').value)||0;
+    const len=parseFloat(r.querySelector('.wc-len').value)||0;
+    const thk=parseFloat(r.querySelector('.wc-thk').value)||0;
+    const pass=parseFloat(document.getElementById('wc-pass').value)||1;
+    const dia=parseFloat(document.getElementById('wc-dia').value)||1;
+    const oth=parseFloat(document.getElementById('wc-other').value)||1;
+    wire+=len*thk*base*pass*dia*oth;
+  });
+  let tool=parseFloat(document.getElementById('cnc-tool').value)||0;if(!tool)tool=(proc+holes+wire)*0.12;
+  let surf=0;document.querySelectorAll('#cnc-surfs .surface-row').forEach(r=>{const v=r.querySelector('.cnc-stype').value.split('|');const q=parseFloat(r.querySelector('.cnc-sqty').value)||0;if(v[1]!=='n')surf+=parseFloat(v[0])*q;});
+  const batch=batchCoeff(qty);
+  const sub=mat+feed+proc+holes+wire+tool+surf+pkg;
+  const preProfit=sub*(1+pr);
+  const discount=preProfit*(1-batch);
+  const unit=preProfit*batch;
+  const bname=qty<=5?'打样':qty<=50?'小批量':qty<=500?'中批量':'大批量';
+  const avgT=Array.from(document.querySelectorAll('.proc-row')).reduce((s,r)=>s+(parseFloat(r.querySelector('.cnc-time').value)||0),0);
+  const days=Math.ceil(avgT*qty/60/8)+(surf>0?5:2)+2;
   const total=unit*qty;
   const p=n=>(n/unit*100).toFixed(1);
-  const rows=[['📦 材料费',mat.toFixed(2),p(mat)],['⚙️ 加工费(CNC)',proc.toFixed(2),p(proc)],['🔧 刀具损耗',tool.toFixed(2),p(tool)]];
-  if(wedm>0)rows.push(['✂️ 线切割',wedm.toFixed(2),p(wedm)]);
-  if(grind>0)rows.push(['🫧 磨床加工',grind.toFixed(2),p(grind)]);
-  if(holes>0)rows.push(['🕳️ 孔加工',holes.toFixed(2),p(holes)]);
-  rows.push(['🎨 表面处理',surf.toFixed(2),p(surf)]);
-  if(heat>0)rows.push(['🔥 热处理',heat.toFixed(2),p(heat)]);
-  rows.push(['📦 包装运输',pkg.toFixed(2),p(pkg)]);
-  if(batchD<1)rows.push(['📉 批量折扣('+(batchD*100).toFixed(0)+'%)','—','—']);
-  rows.push(['💼 管理利润',profit.toFixed(2),p(profit)],['<b>合计</b>','<b>'+unit.toFixed(2)+'</b>','100']);
-  show('cnc-r',resultHTML('CNC机加工成本估算',`订单${qty}件 · ${batch} · 预计${days}天交期`,
-    [{v:'¥'+unit.toFixed(2),l:'单件成本'},{v:'¥'+total.toLocaleString(),l:`整批${qty}件`},{v:days+'天',l:'预计交期'},{v:batch,l:'批量级别'}],
-    rows,
-    '价格受地区、供应商产能、材料行情波动影响，建议多家比价。线切割/磨床/孔加工均已系数化计算。'
+  const modeName=mode==='std'?'标准核价·毛料公式':'简易估算·净重法';
+  show('cnc-r',resultHTML('CNC机加工成本估算（'+modeName+'）',`订单${qty}件 · ${bname} · 批量系数×${batch} · 预计${days}天交期`,
+    [{v:'¥'+unit.toFixed(2),l:'单件成本'},{v:'¥'+total.toLocaleString(),l:`整批${qty}件`},{v:days+'天',l:'预计交期'},{v:'×'+batch,l:'批量系数'}],
+    [['📦 材料费(毛料)',mat.toFixed(2),p(mat)],['➕ 毛料附加',feed.toFixed(2),p(feed)],['⚙️ 加工费(工时)',proc.toFixed(2),p(proc)],['🕳️ 孔类加工',holes.toFixed(2),p(holes)],['✂️ 线切割',wire.toFixed(2),p(wire)],['🔧 刀具损耗',tool.toFixed(2),p(tool)],['🎨 表面处理',surf.toFixed(2),p(surf)],['📦 包装运输',pkg.toFixed(2),p(pkg)],['💼 管理利润',(sub*pr).toFixed(2),p(sub*pr)],['📉 批量折扣','-'+discount.toFixed(2),p(discount)],['<b>合计（折后）</b>','<b>'+unit.toFixed(2)+'</b>','100']],
+    '标准模式依据《采购加工核价标准》：材料按毛料公式(L+5)(W+5)(H+3)ρ/10⁶，孔类/线切割按系数法，批量按档位折扣(最大7折)。未税估算、季度调价，建议多家比价。'
   ));
-  cncTips(mat,proc+wedm+grind+holes,surf,unit,qty);
+  cncTips(mat,proc,surf,unit,qty);
 }
 
 // ===== 注塑 =====
@@ -1025,6 +1121,301 @@ function calcPcb(){
     'PCB价格随批量下降明显(5→500片可降60%+)。ENIG/高Tg/阻抗控制等加价显著。建议设计预留工艺窗口，优先选绿色阻焊。'
   ));
   pcbTips(unit,qty,layers);
+}
+
+// ===== 圆件车削（核价标准·圆件部分） =====
+function rnMat(){const s=document.getElementById('rn-mat');if(s.value){document.getElementById('rn-price').value=s.value;const d=s.selectedOptions[0].dataset.d;if(d)document.getElementById('rn-dens').value=d;}}
+function addRproc(){const h=document.querySelector('#rn-procs .proc-row').outerHTML;const d=document.createElement('div');d.innerHTML=h;const r=d.firstElementChild;r.querySelector('.rn-time').value=20;document.getElementById('rn-procs').appendChild(r);}
+function calcRound(){
+  const mp=parseFloat(document.getElementById('rn-price').value)||0;
+  const dens=parseFloat(document.getElementById('rn-dens').value)||7.85;
+  const D=parseFloat(document.getElementById('rn-d').value)||0;
+  const L=parseFloat(document.getElementById('rn-l').value)||0;
+  const qty=parseInt(document.getElementById('rn-qty').value)||1;
+  const pr=parseFloat(document.getElementById('rn-profit').value)||0.2;
+  const pkg=parseFloat(document.getElementById('rn-pkg').value)||0;
+  const R=D/2;
+  const blank=Math.PI*(R+2.5)*(R+2.5)*(L+5)*dens/1e6;
+  const mat=blank*mp;
+  let proc=0;document.querySelectorAll('#rn-procs .proc-row').forEach(r=>{const rate=parseFloat(r.querySelector('.rn-dev').value)||0;const t=parseFloat(r.querySelector('.rn-time').value)||0;proc+=rate*t/60;});
+  let tool=parseFloat(document.getElementById('rn-tool').value)||0;if(!tool)tool=proc*0.12;
+  let surf=0;document.querySelectorAll('#rn-surfs .surface-row').forEach(r=>{const v=r.querySelector('.rn-stype').value.split('|');const q=parseFloat(r.querySelector('.rn-sqty').value)||0;if(v[1]!=='n')surf+=parseFloat(v[0])*q;});
+  const batch=batchCoeff(qty);
+  const sub=mat+proc+tool+surf+pkg;
+  const preProfit=sub*(1+pr);
+  const discount=preProfit*(1-batch);
+  const unit=preProfit*batch;
+  const total=unit*qty;
+  const p=n=>(n/unit*100).toFixed(1);
+  show('rn-r',resultHTML('圆件车削成本估算（标准核价）',`毛坯${blank.toFixed(2)}kg · 订单${qty}件 · 批量系数×${batch}`,
+    [{v:'¥'+unit.toFixed(2),l:'单件成本'},{v:'¥'+total.toLocaleString(),l:`整批${qty}件`},{v:blank.toFixed(2)+'kg',l:'毛坯重量'},{v:'×'+batch,l:'批量系数'}],
+    [['📦 材料费(毛坯)',mat.toFixed(2),p(mat)],['⚙️ 加工费',proc.toFixed(2),p(proc)],['🔧 刀具损耗',tool.toFixed(2),p(tool)],['🎨 表面处理',surf.toFixed(2),p(surf)],['📦 包装运输',pkg.toFixed(2),p(pkg)],['💼 管理利润',(sub*pr).toFixed(2),p(sub*pr)],['📉 批量折扣','-'+discount.toFixed(2),p(discount)],['<b>合计（折后）</b>','<b>'+unit.toFixed(2)+'</b>','100']],
+    '依据《采购加工核价标准》圆件部分：毛坯=π(R+2.5)²(L+5)ρ/10⁶，工时单价车床50/数控车70/走心机100/车铣复合150。未税估算、季度调价。'
+  ));
+  roundTips(unit,qty);
+}
+function roundTips(unit,qty){
+  const tips=[];
+  tips.push({type:'cost',title:'圆件成本关键',text:'毛坯按最大外径+5mm、长度+5mm计算，材料浪费率是关键。①评估能否缩小台阶外径差；②长径比大的件车削工时高；③空心件先钻孔再车可省料。'});
+  tips.push({type:'delivery',title:'车削交期',text:'①数控车打样1~3天；②批量件每件20秒~2分钟；③走心机适合直径<20mm长件；④车铣复合一次装夹降精度风险。'});
+  tips.push({type:'quality',title:'圆件品质要点',text:'①同轴度/圆度标注要明确；②滚花/攻丝等辅助工序确认；③热处理件需预留磨削余量；④外圆磨精度±0.005mm。'});
+  tips.push({type:'strategy',title:'供应商选择',text:'①小直径大批量选走心机工厂；②大直径长轴选带外圆磨的厂；③量小选数控车通用厂；④批量系数最大可谈7折。'});
+  showTips('rn-tips',tips);
+}
+
+// ===== 机架/防护罩（核价标准·机架部分） =====
+function addFrProfile(){const r=document.querySelector('#fr-profiles .surface-row').cloneNode(true);r.querySelector('.fr-pm').value=0;document.getElementById('fr-profiles').appendChild(r);}
+function addFrPart(){const r=document.querySelector('#fr-parts .surface-row').cloneNode(true);r.querySelector('.fr-pq').value=0;document.getElementById('fr-parts').appendChild(r);}
+function frMethod(){const m=document.getElementById('fr-method').value;const w=m==='weight';document.getElementById('fr-w1').style.display=w?'':'none';document.getElementById('fr-w2').style.display=w?'':'none';document.getElementById('fr-profile-card').style.display=w?'none':'';}
+function calcFrame(){
+  const qty=parseInt(document.getElementById('fr-qty').value)||1;
+  const pr=parseFloat(document.getElementById('fr-profit').value)||0.15;
+  const pkg=parseFloat(document.getElementById('fr-pkg').value)||0;
+  const method=document.getElementById('fr-method').value;
+  let base=0;
+  if(method==='profile'){
+    document.querySelectorAll('#fr-profiles .surface-row').forEach(r=>{const rate=parseFloat(r.querySelector('.fr-ptype').value)||0;const m=parseFloat(r.querySelector('.fr-pm').value)||0;base+=rate*m;});
+    base=base*1.05;
+  }else{
+    const w=parseFloat(document.getElementById('fr-weight').value)||0;
+    const c=parseFloat(document.getElementById('fr-coeff').value)||25;
+    base=w*c;
+  }
+  let parts=0;document.querySelectorAll('#fr-parts .surface-row').forEach(r=>{const v=parseFloat(r.querySelector('.fr-part').value)||0;const q=parseFloat(r.querySelector('.fr-pq').value)||0;parts+=v*q;});
+  const pc=parseFloat(document.getElementById('fr-pc').value)||0;
+  const paint=(parseFloat(document.getElementById('fr-paint').value)||0)*60;
+  const batch=batchCoeff(qty);
+  const sub=base+parts+pc+paint+pkg;
+  const preProfit=sub*(1+pr);
+  const discount=preProfit*(1-batch);
+  const unit=preProfit*batch;
+  const total=unit*qty;
+  const p=n=>(n/unit*100).toFixed(1);
+  const mName=method==='profile'?'型材明细法':'重量系数法';
+  show('fr-r',resultHTML('机架/防护罩成本估算（'+mName+'）',`订单${qty}套 · 批量系数×${batch}`,
+    [{v:'¥'+unit.toFixed(2),l:'单套成本'},{v:'¥'+total.toLocaleString(),l:`整批${qty}套`},{v:mName,l:'计价方法'},{v:'×'+batch,l:'批量系数'}],
+    [['🧱 型材/机架费',base.toFixed(2),p(base)],['🔩 配件费',parts.toFixed(2),p(parts)],['📋 PC/板材费',pc.toFixed(2),p(pc)],['🎨 喷涂费',paint.toFixed(2),p(paint)],['📦 包装运输',pkg.toFixed(2),p(pkg)],['💼 管理利润',(sub*pr).toFixed(2),p(sub*pr)],['📉 批量折扣','-'+discount.toFixed(2),p(discount)],['<b>合计（折后）</b>','<b>'+unit.toFixed(2)+'</b>','100']],
+    '依据《采购加工核价标准》：型材费=L×单价/米×1.05，机架一口价=重量×系数(20/25/28)，喷涂60元/m²，配件另计。未税估算、季度调价。'
+  ));
+  frameTips(unit,qty);
+}
+function frameTips(unit,qty){
+  const tips=[];
+  tips.push({type:'cost',title:'机架成本关键',text:'①型材明细法适合标准化型材；②重量系数法含材料+加工+表面处理一口价；③材料波动>10%可要求调整系数；④脚轮脚杯单独询价。'});
+  tips.push({type:'delivery',title:'机架交期',text:'①型材切割+组装3~7天；②带CNC铣削加3~5天；③喷粉/氧化再+3~5天；④批量机架建议分批交付。'});
+  tips.push({type:'quality',title:'机架品质要点',text:'①焊接后孔位回牙处理（表面处理会堵孔）；②承重机架选B系列型材；③表面处理完成要复检尺寸；④紧固件扭矩规范。'});
+  tips.push({type:'strategy',title:'供应商选择',text:'①型材+钣金+喷涂一体化厂省物流；②小批量找手板/机架厂；③批量大谈型材年度用量折扣；④防护罩PC板厚3mm起。'});
+  showTips('fr-tips',tips);
+}
+
+// ===== 报价比对单 =====
+// —— BOM 引擎类别 → 核价器工序类别映射 ——
+function mapBomCat(cat){
+  const m={
+    'PCB':'pcb','结构件':'cnc','机加工':'cnc','钣金':'sheet','注塑':'inj','压铸':'dc',
+    '连接器':'wh','线束':'wh','包装':'pkg','模具':'mold','SMT':'smt','表面':'surf'
+  };
+  for(const k in m){ if(cat && cat.includes(k)) return m[k]; }
+  return 'other';
+}
+// —— 追加/填充一行比对项（导入用）——
+function setCmpRow(r, append){
+  const src=document.querySelector('#cmp-rows .cmp-row');
+  const row=src ? src.cloneNode(true) : null;
+  if(!row){ const d=document.createElement('div'); d.className='cmp-row'; document.getElementById('cmp-rows').appendChild(d); return d; }
+  row.querySelector('.cmp-cat').value=r.cat||'other';
+  row.querySelector('.cmp-qty').value=r.qty;
+  row.querySelector('.cmp-base').value=r.base||0;
+  row.querySelector('.cmp-quote').value=r.quote||0;
+  row.dataset.name=r.name||'';
+  if(append) document.getElementById('cmp-rows').appendChild(row);
+  else { document.getElementById('cmp-rows').innerHTML=''; document.getElementById('cmp-rows').appendChild(row); }
+  return row;
+}
+// —— 导入 BOM 引擎 JSON（output/*_result.json）——
+function importBomJson(){
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='.json,application/json';
+  inp.onchange=ev=>{
+    const f=ev.target.files[0]; if(!f) return;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      try{
+        const d=JSON.parse(rd.result);
+        if(!d.items || !Array.isArray(d.items)){ alert('无法识别：未找到 items 数组。请选择 BOM 成本引擎输出的 *_result.json'); return; }
+        // 用首行模板重建
+        const src=document.querySelector('#cmp-rows .cmp-row');
+        document.getElementById('cmp-rows').innerHTML=src ? src.outerHTML : '<div class="cmp-row"><div class="field"><label>项目/工序</label><select class="cmp-cat"><option value="other">其他</option></select></div><div class="field"><label>数量</label><input type="number" class="cmp-qty" value="1"></div><div class="field"><label>基准单价 (¥)</label><input type="number" class="cmp-base" value="0"></div><div class="field"><label>报价单价 (¥)</label><input type="number" class="cmp-quote" value="0"></div><button class="remove-row" onclick="rmCmpRow(this)">×</button></div>';
+        let added=0, skipped=0;
+        d.items.forEach(it=>{
+          const name=it['物料说明']||'';
+          const qty=it['用量']||1;
+          const base=it['估算单价¥'];
+          if(base===undefined || base===null || isNaN(base) || base<=0){ skipped++; return; }
+          setCmpRow({cat:mapBomCat(it['类别']||''), qty, base, quote:0, name}, true);
+          added++;
+        });
+        if(!document.getElementById('cmp-part').value) document.getElementById('cmp-part').value=(d.part_count||added)+'项BOM（引擎导入）';
+        show('cmp-r',`<div class="result-header"><h3>✅ BOM 引擎基准价导入成功</h3><p>导入 <b>${added}</b> 条估算价（跳过 ${skipped} 条无估价），基准价=引擎估算典型值，报价价留空待供应商报价导入</p></div><div class="result-body"><div class="stats"><div class="stat"><div class="stat-value">${cmpMoney(d.total_typ||0)}</div><div class="stat-label">引擎估算总额（typ）</div></div><div class="stat"><div class="stat-value">${cmpMoney(d.total_lo||0)}</div><div class="stat-label">区间下限</div></div><div class="stat"><div class="stat-value">${cmpMoney(d.total_hi||0)}</div><div class="stat-label">区间上限</div></div></div><div class="note-box"><span class="note-icon">💡</span><span class="note-text">下一步：点击「📤 导入供应商报价 (CSV)」或手工填报价单价，再点「📊 生成比对结果」</span></div></div>`);
+      }catch(e){ alert('JSON 解析失败：'+e.message); }
+    };
+    rd.readAsText(f);
+  };
+  inp.click();
+}
+// —— 导入供应商报价 CSV（表头含 项目/物料、数量、报价单价 等列即可）——
+function cmpMatchName(a,b){
+  const al=a.toLowerCase(), bl=b.toLowerCase();
+  if(al.length>=4&&bl.length>=4&&(al.includes(bl)||bl.includes(al))) return true;
+  // 型号 token 交集：提取字母数字型号（如 A311D2、K4U6E3、EH-11002）
+  const toks=s=>s.match(/[a-z0-9][a-z0-9-]{3,}/g)||[];
+  const ta=toks(al), tb=toks(bl);
+  const stop=new Set(['pcb','smt','bga','qfn','lpddr','ddr','rev','2gb','4gb','mcu','soc','wifi','gps','led','usb','type','mini','max','info','user','bluetooth','giga']);
+  const sig=t=>t.length>=4&&/[\d]/.test(t)&&!stop.has(t);
+  if(ta.some(t=>sig(t)&&tb.includes(t))) return true;
+  // 中文类别词 + 双方都含数字 → 视为同类物料（如 主板PCB/EH-11002 vs 主板PCB 8层HDI）
+  const cstop=new Set(['加工','材料','成本','费用','处理','生产','测试','包装','零件','部件','组件','配件','结构','外壳','连接','模块','聚合物','锂电','充电','防水','高清','智能','无线','蓝牙','金属','塑料','工程','耐压','阻燃','环保','便携','轻便','超薄','高性能','低功耗']);
+  const cw=s=>(s.match(/[\u4e00-\u9fa5]{2,}/g)||[]).filter(w=>!cstop.has(w));
+  const wa=cw(al), wb=cw(bl);
+  return /[\d]/.test(al)&&/[\d]/.test(bl)&&wa.some(w=>wb.includes(w)&&w.length>=2);
+}
+function importCmpCSV(){
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='.csv,text/csv';
+  inp.onchange=ev=>{
+    const f=ev.target.files[0]; if(!f) return;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      try{
+        const lines=rd.result.replace(/\r/g,'').split('\n').map(l=>l.trim()).filter(Boolean);
+        if(lines.length<2){ alert('CSV 至少需要表头 + 一行数据'); return; }
+        const head=lines[0].split(',').map(h=>h.replace(/^"+|"+$/g,'').trim());
+        const col=(...names)=>head.findIndex(h=>names.some(n=>h.includes(n)));
+        const iName=col('项目','物料','名称','描述','产品');
+        const iQty=col('数量','用量','Qty');
+        const iQuote=col('报价单价','报价','单价');
+        const iBase=col('基准单价','基准','内部价','估算');
+        if(iName<0){ alert('未识别到项目/物料列（表头需含"项目"或"物料"）'); return; }
+        const qtyIdx=iQty>=0?iQty:1, quoteIdx=iQuote>=0?iQuote:2, baseIdx=iBase>=0?iBase:-1;
+        let matched=0, added=0;
+        for(let i=1;i<lines.length;i++){
+          const cells=lines[i].split(',').map(c=>c.replace(/^"+|"+$/g,'').trim());
+          const name=cells[iName]; if(!name) continue;
+          const qty=parseFloat(cells[qtyIdx])||1;
+          const quote=parseFloat(cells[quoteIdx])||0;
+          const base=baseIdx>=0?(parseFloat(cells[baseIdx])||0):0;
+          // 尝试匹配已导入的引擎行（按名称模糊匹配）
+          let target=null;
+          document.querySelectorAll('#cmp-rows .cmp-row').forEach(r=>{
+            const n=(r.dataset.name||'').toLowerCase();
+            if(!target && n && (n.includes(name.toLowerCase())||name.toLowerCase().includes(n))) target=r;
+          });
+          if(target){ target.querySelector('.cmp-qty').value=qty; target.querySelector('.cmp-quote').value=quote; if(base) target.querySelector('.cmp-base').value=base; matched++; }
+          else { setCmpRow({cat:'other', qty, base:base||0, quote, name}, true); added++; }
+        }
+        show('cmp-r',`<div class="result-header"><h3>✅ 供应商报价导入完成</h3><p>匹配引擎行 <b>${matched}</b> 条（自动填入报价价） · 新增 <b>${added}</b> 条</p></div><div class="result-body"><div class="note-box"><span class="note-icon">💡</span><span class="note-text">点「📊 生成比对结果」查看差异与谈判空间；未匹配的报价项已追加到列表末尾</span></div></div>`);
+      }catch(e){ alert('CSV 解析失败：'+e.message); }
+    };
+    rd.readAsText(f);
+  };
+  inp.click();
+}
+function rmCmpRow(b){const r=b.closest('.cmp-row');if(document.querySelectorAll('#cmp-rows .cmp-row').length>1)r.remove();}
+function cmpAddRow(){const src=document.querySelector('#cmp-rows .cmp-row');const r=src.cloneNode(true);r.querySelector('.cmp-qty').value=1;r.querySelector('.cmp-base').value=0;r.querySelector('.cmp-quote').value=0;document.getElementById('cmp-rows').appendChild(r);}
+function cmpRowsData(){
+  const rows=[];
+  document.querySelectorAll('#cmp-rows .cmp-row').forEach(r=>{
+    const qty=parseFloat(r.querySelector('.cmp-qty').value)||0;
+    const base=parseFloat(r.querySelector('.cmp-base').value)||0;
+    const quote=parseFloat(r.querySelector('.cmp-quote').value)||0;
+    if(qty<=0||(base<=0&&quote<=0))return;
+    rows.push({cat:r.querySelector('.cmp-cat').selectedOptions[0].text,qty,base,quote});
+  });
+  return rows;
+}
+function cmpMoney(n){return '¥'+n.toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function cmpTag(pct){
+  if(pct>15)return '<span class="tag tag-red">偏高</span>';
+  if(pct>5)return '<span class="tag tag-orange">略高</span>';
+  if(pct<-5)return '<span class="tag tag-green">更低</span>';
+  return '<span class="tag tag-gray">持平</span>';
+}
+function cmpExportCSV(){
+  const sup=document.getElementById('cmp-supplier').value.trim()||'supplier';
+  const part=document.getElementById('cmp-part').value.trim()||'part';
+  const rows=cmpRowsData();
+  if(!rows.length){alert('没有可导出的明细');return;}
+  const esc=v=>`"${String(v).replace(/"/g,'""')}"`;
+  const d=new Date();
+  let csv='\ufeff报价比对单,'+esc(sup)+','+esc(part)+'\n';
+  csv+='项目,数量,基准单价,报价单价,基准小计,报价小计,差异额,差异率%\n';
+  let bT=0,qT=0;
+  rows.forEach(r=>{
+    const bA=r.base*r.qty,qA=r.quote*r.qty;bT+=bA;qT+=qA;
+    csv+=[esc(r.cat),r.qty,r.base,r.quote,bA.toFixed(2),qA.toFixed(2),(qA-bA).toFixed(2),(r.base?((qA-bA)/(r.base*r.qty)*100).toFixed(1):'')].join(',')+'\n';
+  });
+  csv+=['合计','','','',bT.toFixed(2),qT.toFixed(2),(qT-bT).toFixed(2),(bT?((qT-bT)/bT*100).toFixed(1):'')].join(',')+'\n';
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`报价比对_${sup}_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.csv`;
+  a.click();URL.revokeObjectURL(a.href);
+}
+function calcCompare(){
+  const sup=document.getElementById('cmp-supplier').value.trim()||'未填写';
+  const part=document.getElementById('cmp-part').value.trim()||'未填写';
+  const orderQty=parseInt(document.getElementById('cmp-qty').value)||1;
+  const tax=document.getElementById('cmp-tax').value;
+  const rows=cmpRowsData();
+  if(!rows.length){alert('请至少填写一行比对明细（数量 + 基准价或报价价）');return;}
+  let baseTotal=0,quoteTotal=0,saveable=0;
+  const detail=rows.map(r=>{
+    const bA=r.base*r.qty,qA=r.quote*r.qty;
+    baseTotal+=bA;quoteTotal+=qA;
+    if(qA>bA)saveable+=(qA-bA);
+    const d=qA-bA;
+    const pct=bA>0?(d/bA*100):0;
+    return {cat:r.cat,qty:r.qty,base:r.base,quote:r.quote,d,pct};
+  });
+  const diff=quoteTotal-baseTotal;
+  const diffPct=baseTotal>0?(diff/baseTotal*100):0;
+  const flagged=detail.filter(x=>x.pct>15).length;
+  const top=detail.filter(x=>x.d>0).sort((a,b)=>b.d-a.d).slice(0,3);
+  const diffCls=diff>0?'diff-up':diff<0?'diff-down':'diff-flat';
+  const diffPctCls=diffPct>0?'diff-up':diffPct<0?'diff-down':'diff-flat';
+  const rowsHtml=detail.map(x=>{
+    const dc=x.d>0?'diff-up':x.d<0?'diff-down':'diff-flat';
+    return `<tr><td>${x.cat}</td><td>${x.qty}</td><td>${x.base.toFixed(2)}</td><td>${x.quote.toFixed(2)}</td><td class="${dc}">${x.d>=0?'+':''}${x.d.toFixed(2)}</td><td class="${dc}">${x.pct>0?'+':''}${x.pct.toFixed(1)}%</td><td>${cmpTag(x.pct)}</td></tr>`;
+  }).join('');
+  const totalHtml=`<tr class="cmp-total"><td>合计</td><td>${orderQty.toLocaleString()}</td><td></td><td></td><td class="${diffCls}">${diff>=0?'+':''}${cmpMoney(diff)}</td><td class="${diffPctCls}">${diffPct>0?'+':''}${diffPct.toFixed(1)}%</td><td></td></tr>`;
+  const stats=`<div class="stats">
+    <div class="stat"><div class="stat-value">${cmpMoney(baseTotal)}</div><div class="stat-label">基准总额（内部价）</div></div>
+    <div class="stat highlight"><div class="stat-value">${cmpMoney(quoteTotal)}</div><div class="stat-label">供应商报价总额</div></div>
+    <div class="stat"><div class="stat-value ${diffCls}">${diff>=0?'+':''}${cmpMoney(diff)}</div><div class="stat-label">差异额</div></div>
+    <div class="stat highlight"><div class="stat-value ${diffPctCls}">${diffPct>0?'+':''}${diffPct.toFixed(1)}%</div><div class="stat-label">差异率</div></div>
+  </div>`;
+  const tbl=`<table class="cmp-table"><thead><tr><th>项目/工序</th><th>数量</th><th>基准单价</th><th>报价单价</th><th>差异额</th><th>差异率</th><th>状态</th></tr></thead><tbody>${rowsHtml}${totalHtml}</tbody></table>`;
+  const note=`可谈判空间（报价高于基准的差异合计）≈ <b>${cmpMoney(saveable)}</b> · 建议先攻金额最大的差异项，目标把单项压回「基准价×1.05」以内。<br><button class="export-btn" onclick="cmpExportCSV()">⬇ 导出CSV</button>`;
+  show('cmp-r',`<div class="result-header"><h3>报价比对结果 · ${sup}</h3><p>物料：${part} · 订单 ${orderQty.toLocaleString()} 件 · ${tax}报价口径</p></div><div class="result-body">${stats}${tbl}<div class="note-box"><span class="note-icon">💡</span><span class="note-text">${note}</span></div></div>`);
+  cmpTips(diffPct,saveable,flagged,top,sup);
+}
+function cmpTips(diffPct,saveable,flagged,top,sup){
+  const tips=[];
+  if(diffPct>15){
+    tips.push({type:'cost',title:'报价明显高于基准（+'+diffPct.toFixed(0)+'%）',text:'可谈判空间约 '+cmpMoney(saveable)+'。重点核对差异最大的项目，要求供应商提供分项报价明细（材料/工时/表面处理），逐项比价后议价。'});
+  }else if(diffPct>5){
+    tips.push({type:'cost',title:'报价略高于基准（+'+diffPct.toFixed(0)+'%）',text:'差异不大，但 '+cmpMoney(saveable)+' 仍值得争取。可提出按核价器标准价成交，或要求批量折扣/年度框架价。'});
+  }else if(diffPct<-5){
+    tips.push({type:'quality',title:'报价低于基准（'+diffPct.toFixed(0)+'%）',text:'警惕低价陷阱：确认材料牌号、加工精度、表面处理是否与基准一致；先要样品+FAI报告验证，再锁定价格。'});
+  }else{
+    tips.push({type:'cost',title:'报价与基准基本持平',text:'价格健康，谈判重点转向交期、账期与品质条款：30~60天账期、延期扣款、年度框架协议。'});
+  }
+  if(top.length){
+    tips.push({type:'strategy',title:'Top 差异项逐个击破',text:top.map((x,i)=>(i+1)+'. '+x.cat+' 高'+x.pct.toFixed(0)+'%（+'+cmpMoney(x.d)+'）').join('；')+'。先谈金额最大的项，化整为零逐项比价。'});
+  }
+  if(flagged>0){
+    tips.push({type:'delivery',title:'高差异项（超15%）处理',text:'对 '+flagged+' 项要求提供报价依据（料价行情、工时计算表）；若供应商坚持高价，可引入第二供应商比价施压。'});
+  }
+  tips.push({type:'strategy',title:'成交策略',text:'多款物料打包下给同一供应商换阶梯价；承诺年度用量签框架协议锁价；月结账期可作为让步筹码。'});
+  showTips('cmp-tips',tips);
 }
 </script>
 <script>
